@@ -1,3 +1,4 @@
+package com.bank.models;
 public class TransactionRecord {
     private long transactionId;
     private Long fromAccountId;

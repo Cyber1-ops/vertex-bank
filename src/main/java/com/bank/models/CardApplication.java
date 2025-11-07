@@ -1,3 +1,4 @@
+package com.bank.models;
 public class CardApplication {
     private long applicationId;
     private long userId;

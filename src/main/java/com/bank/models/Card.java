@@ -1,3 +1,4 @@
+package com.bank.models;
 public class Card {
     private long cardId;
     private long accountId;

@@ -1,3 +1,4 @@
+package com.bank.models;
 public class Beneficiary {
     private long beneficiaryId;
     private long userId;

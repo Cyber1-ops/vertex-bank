@@ -1,3 +1,4 @@
+package com.bank.models;
 public class Notification {
     private long notificationId;
     private long userId;

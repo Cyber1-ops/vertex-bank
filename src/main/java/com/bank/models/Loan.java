@@ -1,3 +1,4 @@
+package com.bank.models;
 public class Loan {
     private long loanId;
     private long userId;
