@@ -11,45 +11,44 @@ import com.bank.utils.*;
 @WebServlet("/signup")
 public class Signup extends HttpServlet {
 	
-	
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
+	            throws ServletException, IOException {
 
-protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    String username = req.getParameter("username");
-    String email = req.getParameter("email");
-    String fullName = req.getParameter("name");
-    String password = req.getParameter("pass");
-    String phone = req.getParameter("tel");
-    
-    if(validateUserInput(email,username,password,fullName,phone)) {
-    	String passwordHash = PasswordUtil.hashPassword(password.toCharArray());
-          User user = new User();
-          user.setUsername(username);
-          user.setEmail(email);
-          user.setFullName(fullName);
-          user.setPasswordHash(passwordHash);
-          user.setPhone(phone);
-          if(DatabaseUtil.Signup(user)) {
-        	  req.getSession().setAttribute("user", user);
-        	  req.getRequestDispatcher("login.jsp").forward(req, resp);
-        	  return;
-        	  } 
-          else {
-        	  String message = "account creation faild! , Please try again";
-        	  req.getSession().setAttribute("message", message);
-        	  resp.sendRedirect("signup.jsp");
-        	  return;
-          }
-          
-    
-    }
-          else {
-        	  String error = "Wrong Information Enter a valid Values";
-        	  req.getSession().setAttribute("error", error);
-        	  resp.sendRedirect("signup.jsp");
-        	  return;
-          }
-                             
+	        String username = req.getParameter("username");
+	        String email = req.getParameter("email");
+	        String fullName = req.getParameter("name");
+	        String password = req.getParameter("pass");
+	        String phone = req.getParameter("tel");
+
+	        // VALIDATION
+	        if (!validateUserInput(email, username, password, fullName, phone)) {
+	            req.setAttribute("error", "❌ Wrong information. Enter valid values.");
+	            req.getRequestDispatcher("signup.jsp").forward(req, resp);
+	            return;
+	        }
+
+	        // HASH PASSWORD
+	        String passwordHash = PasswordUtil.hashPassword(password.toCharArray());
+
+	        // CREATE USER OBJECT
+	        User user = new User();
+	        user.setUsername(username);
+	        user.setEmail(email);
+	        user.setFullName(fullName);
+	        user.setPasswordHash(passwordHash);
+	        user.setPhone(phone);
+
+	        // TRY TO SAVE USER
+	        if (DatabaseUtil.Signup(user)) {
+	            req.setAttribute("msg", "🎉 Account created successfully! <a href='login.jsp'>Login now</a>");
+	            req.getRequestDispatcher("signup.jsp").forward(req, resp);
+	        } else {
+	            req.setAttribute("error", "❌ Account creation failed. Please try again.");
+	            req.getRequestDispatcher("signup.jsp").forward(req, resp);
+	        }
+	   
 	}
+
 
 public static boolean validateUserInput(String email, String username, String password, String fullName, String phone) {
     if (email == null || username == null || password == null || fullName == null || phone == null) {

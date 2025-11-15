@@ -12,7 +12,7 @@
     rel="stylesheet">
   <%  User user =(User)request.getSession().getAttribute("user");
   
-  if(user.getEmail()== null ){
+  if(user == null || user.getEmail() == null ){
 	  response.sendRedirect("index.jsp");
 	  return;
   } %>
@@ -347,7 +347,7 @@
               <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Settings</a></li>
               <li><a class="dropdown-item" href="#"><i class="bi bi-shield-check"></i> Security</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+              <li><a class="dropdown-item" href="logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
             </ul>
           </li>
         </ul>
@@ -375,7 +375,7 @@
           <div class="section-title">System</div>
           <a class="nav-link" href="#"><i class="bi bi-gear"></i> Settings</a>
           <a class="nav-link" href="#"><i class="bi bi-shield-check"></i> Security</a>
-          <a class="nav-link" href="#"><i class="bi bi-file-earmark-text"></i> Logs</a>
+          <a class="nav-link" href="AuditLogServlet"><i class="bi bi-file-earmark-text"></i> Logs</a>
           <a class="nav-link" href="#"><i class="bi bi-headset"></i> Support</a>
         </nav>
       </div>
@@ -399,7 +399,7 @@
               <div class="d-flex justify-content-between align-items-center">
                 <div>
                   <p>Total Users</p>
-                  <h3><% int USER =DatabaseUtil.countUsers();
+                  <h3><% int USER =(int) request.getAttribute("Ucount");
                   out.print(USER); %></h3>
                   <small class="text-success"><i class="bi bi-arrow-up"></i> +12.5%</small>
                 </div>
@@ -415,7 +415,8 @@
               <div class="d-flex justify-content-between align-items-center">
                 <div>
                   <p>Total Balance</p>
-                  <h3>$2.5M</h3>
+                  <h3><% double balance = (Double) request.getAttribute("allbalance");
+                  out.print(balance);%></h3>
                   <small class="text-success"><i class="bi bi-arrow-up"></i> +8.2%</small>
                 </div>
                 <div class="icon-wrapper">
@@ -618,243 +619,4 @@
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>>
-                        <button class="action-btn edit" title="Edit"><i class="bi bi-pencil"></i></button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><span class="text-muted">#TXN-10233</span></td>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-2" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-person text-primary"></i>
-                          </div>
-                          <span>Sarah Johnson</span>
-                        </div>
-                      </td>
-                      <td>Withdrawal</td>
-                      <td class="fw-bold text-danger">-$850.00</td>
-                      <td>Nov 7, 2025</td>
-                      <td><span class="badge badge-pending">Pending</span></td>
-                      <td>
-                        <button class="action-btn" title="View"><i class="bi bi-eye"></i></button>
-                        <button class="action-btn edit" title="Edit"><i class="bi bi-pencil"></i></button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><span class="text-muted">#TXN-10232</span></td>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-2" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-person text-primary"></i>
-                          </div>
-                          <span>Mike Davis</span>
-                        </div>
-                      </td>
-                      <td>Deposit</td>
-                      <td class="fw-bold text-success">+$5,200.00</td>
-                      <td>Nov 6, 2025</td>
-                      <td><span class="badge badge-active">Completed</span></td>
-                      <td>
-                        <button class="action-btn" title="View"><i class="bi bi-eye"></i></button>
-                        <button class="action-btn edit" title="Edit"><i class="bi bi-pencil"></i></button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><span class="text-muted">#TXN-10231</span></td>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-2" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-person text-primary"></i>
-                          </div>
-                          <span>Emma Wilson</span>
-                        </div>
-                      </td>
-                      <td>Payment</td>
-                      <td class="fw-bold text-danger">-$1,200.00</td>
-                      <td>Nov 6, 2025</td>
-                      <td><span class="badge badge-active">Completed</span></td>
-                      <td>
-                        <button class="action-btn" title="View"><i class="bi bi-eye"></i></button>
-                        <button class="action-btn edit" title="Edit"><i class="bi bi-pencil"></i></button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><span class="text-muted">#TXN-10230</span></td>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-2" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-person text-primary"></i>
-                          </div>
-                          <span>James Brown</span>
-                        </div>
-                      </td>
-                      <td>Transfer</td>
-                      <td class="fw-bold text-success">+$3,750.00</td>
-                      <td>Nov 5, 2025</td>
-                      <td><span class="badge badge-active">Completed</span></td>
-                      <td>
-                        <button class="action-btn" title="View"><i class="bi bi-eye"></i></button>
-                        <button class="action-btn edit" title="Edit"><i class="bi bi-pencil"></i></button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <!-- Activity & Recent Users -->
-          <div class="col-lg-4">
-            <!-- Recent Activity -->
-            <div class="card mb-3">
-              <div class="card-header">
-                <h5 class="mb-0">System Activity</h5>
-              </div>
-              <div class="card-body" style="max-height: 300px; overflow-y: auto;">
-                <div class="d-flex mb-3">
-                  <div class="flex-shrink-0">
-                    <div class="bg-success bg-opacity-10 rounded-circle p-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                      <i class="bi bi-person-plus text-success"></i>
-                    </div>
-                  </div>
-                  <div class="flex-grow-1 ms-3">
-                    <h6 class="mb-1 fs-6">New User Registration</h6>
-                    <small class="text-muted">Sarah Chen joined the platform</small>
-                    <div><small class="text-muted">5 minutes ago</small></div>
-                  </div>
-                </div>
-
-                <div class="d-flex mb-3">
-                  <div class="flex-shrink-0">
-                    <div class="bg-warning bg-opacity-10 rounded-circle p-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                      <i class="bi bi-exclamation-triangle text-warning"></i>
-                    </div>
-                  </div>
-                  <div class="flex-grow-1 ms-3">
-                    <h6 class="mb-1 fs-6">Suspicious Activity Detected</h6>
-                    <small class="text-muted">Account #4589 flagged for review</small>
-                    <div><small class="text-muted">15 minutes ago</small></div>
-                  </div>
-                </div>
-
-                <div class="d-flex mb-3">
-                  <div class="flex-shrink-0">
-                    <div class="bg-primary bg-opacity-10 rounded-circle p-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                      <i class="bi bi-credit-card text-primary"></i>
-                    </div>
-                  </div>
-                  <div class="flex-grow-1 ms-3">
-                    <h6 class="mb-1 fs-6">Card Request Approved</h6>
-                    <small class="text-muted">Virtual card issued to Mike Davis</small>
-                    <div><small class="text-muted">1 hour ago</small></div>
-                  </div>
-                </div>
-
-                <div class="d-flex">
-                  <div class="flex-shrink-0">
-                    <div class="bg-info bg-opacity-10 rounded-circle p-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                      <i class="bi bi-gear text-info"></i>
-                    </div>
-                  </div>
-                  <div class="flex-grow-1 ms-3">
-                    <h6 class="mb-1 fs-6">System Maintenance</h6>
-                    <small class="text-muted">Scheduled backup completed</small>
-                    <div><small class="text-muted">2 hours ago</small></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="card">
-              <div class="card-header">
-                <h5 class="mb-0">Quick Actions</h5>
-              </div>
-              <div class="card-body">
-                <button class="btn btn-primary w-100 mb-2">
-                  <i class="bi bi-person-plus"></i> Add New User
-                </button>
-                <button class="btn btn-outline-primary w-100 mb-2">
-                  <i class="bi bi-file-earmark-text"></i> Generate Report
-                </button>
-                <button class="btn btn-outline-primary w-100 mb-2">
-                  <i class="bi bi-shield-check"></i> Review Flagged Accounts
-                </button>
-                <button class="btn btn-outline-primary w-100">
-                  <i class="bi bi-envelope"></i> Send Notification
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- User Management -->
-        <div class="row">
-          <div class="col-12">
-            <div class="card">
-              <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">User Management</h5>
-                <div class="d-flex gap-2">
-                  <div class="search-box" style="width: 250px;">
-                    <i class="bi bi-search"></i>
-                    <input type="text" class="form-control form-control-sm" placeholder="Search users...">
-                  </div>
-                  <button class="btn btn-primary btn-sm">
-                    <i class="bi bi-funnel"></i> Filter
-                  </button>
-                </div>
-              </div>
-              <div class="table-responsive">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th>User ID</th>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Account Type</th>
-                      <th>Balance</th>
-                      <th>Status</th>
-                      <th>Joined</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td><span class="text-muted">#USR-1234</span></td>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-2" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-person text-primary"></i>
-                          </div>
-                          <span>John Smith</span>
-                        </div>
-                      </td>
-                      <td>john.smith@email.com</td>
-                      <td><span class="badge badge-verified">Premium</span></td>
-                      <td class="fw-bold">$45,250.80</td>
-                      <td><span class="badge badge-active">Active</span></td>
-                      <td>Jan 15, 2024</td>
-                      <td>
-                        <button class="action-btn" title="View"><i class="bi bi-eye"></i></button>
-                        <button class="action-btn edit" title="Edit"><i class="bi bi-pencil"></i></button>
-                        <button class="action-btn delete" title="Delete"><i class="bi bi-trash"></i></button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><span class="text-muted">#USR-1235</span></td>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-2" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
-                            <i class="bi bi-person text-primary"></i>
-                          </div>
-                          <span>Sarah Johnson</span>
-                        </div>
-                      </td>
-                      <td>sarah.j@email.com</td>
-                      <td><span class="badge badge-verified">Premium</span></td>
-                      <td class="fw-bold">$32,120.50</td>
-                      <td><span class="badge badge-active">Active</span></td>
-                      <td>Feb 03, 2024</td>
-                      <td>
-                        <button class="action-btn" title="View"><i class="bi bi-eye"></i></button
+</html>

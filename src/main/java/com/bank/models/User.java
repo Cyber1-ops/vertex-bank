@@ -3,7 +3,7 @@ import java.time.LocalDate;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 public class User {
-    private long userId;
+    private int userId;
     private String username;
     private String passwordHash;
     private String fullName;
@@ -23,7 +23,7 @@ public class User {
     
     
     public User(ResultSet rs) throws SQLException {
-        this.userId = rs.getLong("user_id");
+        this.userId = rs.getInt("user_id");
         this.username = rs.getString("username");
         this.passwordHash = rs.getString("password_hash");
         this.fullName = rs.getString("full_name");
@@ -45,7 +45,7 @@ public class User {
 
 
 
-    public long getUserId() { return userId; }
+    public int getUserId() { return userId; }
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
     public String getPasswordHash() { return passwordHash; }

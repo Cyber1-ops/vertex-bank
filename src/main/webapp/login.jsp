@@ -81,8 +81,8 @@
       <button type="submit" class="btn btn-primary w-100 py-2">Login</button>
     </form>
 
-    <p class="mt-4 mb-0">Don’t have an account? <a href="signup.jsp">Sign up</a></p>
-    <a href="home.html" class="d-block mt-3">← Back to Home</a>
+    <p class="mt-4 mb-0">Don't have an account? <a href="signup.jsp">Sign up</a></p>
+    <a href="index.jsp" class="d-block mt-3">← Back to Home</a>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

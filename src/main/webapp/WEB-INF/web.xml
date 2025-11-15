@@ -29,12 +29,26 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>OpenAccountServlet</servlet-name>
-        <servlet-class>OpenAccountServlet</servlet-class>
+    	<description>
+    	</description>
+    	<display-name>Dashboard</display-name>
+    	<servlet-name>Dashboard</servlet-name>
+    	<servlet-class>Dashboard</servlet-class>
+    </servlet>
+    <servlet>
+    	<description>
+    	</description>
+    	<display-name>AuditLog</display-name>
+    	<servlet-name>AuditLog</servlet-name>
+    	<servlet-class>AuditLogServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>OpenAccountServlet</servlet-name>
-        <url-pattern>/open-account</url-pattern>
+    	<servlet-name>Dashboard</servlet-name>
+    	<url-pattern>/Dashboard</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+    	<servlet-name>AuditLog</servlet-name>
+    	<url-pattern>/AuditLog</url-pattern>
     </servlet-mapping>
 
 </web-app>

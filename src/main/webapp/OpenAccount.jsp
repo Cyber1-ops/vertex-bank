@@ -1,4 +1,432 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
+ <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+    // 🔒 Session check
+    if (session.getAttribute("user") == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+    
+    String message = request.getParameter("message");
+%>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open New Account | Vertex Bank</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+            color: #1e293b;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: #0b1220;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: #60a5fa !important;
+            font-size: 1.4rem;
+        }
+
+        .nav-link {
+            color: #e2e8f0 !important;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #60a5fa !important;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #0b1220, #1e3a8a, #2563eb);
+            color: white;
+            padding: 60px 0;
+            margin-bottom: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-container {
+            max-width: 900px;
+            margin: 0 auto 80px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .form-progress {
+            background: linear-gradient(90deg, #2563eb, #60a5fa);
+            height: 6px;
+        }
+
+        .form-content {
+            padding: 50px 60px;
+        }
+
+        .section-title {
+            color: #1e3a8a;
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #e0e7ff;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title::before {
+            content: "";
+            width: 8px;
+            height: 30px;
+            background: linear-gradient(135deg, #2563eb, #60a5fa);
+            border-radius: 4px;
+            margin-right: 15px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.1);
+        }
+
+        .form-control:hover, .form-select:hover {
+            border-color: #cbd5e1;
+        }
+
+        .input-group-text {
+            background: linear-gradient(135deg, #e0e7ff, #dbeafe);
+            border: 2px solid #e2e8f0;
+            color: #1e3a8a;
+            font-weight: 600;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border: none;
+            color: white;
+            padding: 16px 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+            border: 2px solid #93c5fd;
+            border-radius: 12px;
+            color: #1e40af;
+            padding: 16px 20px;
+            font-weight: 500;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-left: 4px solid #2563eb;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .info-card h5 {
+            color: #1e3a8a;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .info-card ul {
+            margin-bottom: 0;
+            padding-left: 20px;
+        }
+
+        .info-card li {
+            color: #475569;
+            margin-bottom: 8px;
+        }
+
+        footer {
+            background-color: #0b1220;
+            color: #cbd5e1;
+            padding: 40px 0;
+            margin-top: auto;
+        }
+
+        footer a {
+            color: #60a5fa;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: #93c5fd;
+        }
+
+        .footer-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #475569, transparent);
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .form-content {
+                padding: 30px 25px;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 🔹 Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark py-3">
+    <div class="container">
+        <a class="navbar-brand" href="index.jsp">Vertex Bank</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="Dashboard">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="logout">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- 🔹 Page Header -->
+<div class="page-header">
+    <div class="container text-center">
+        <h1>Open Your New Account</h1>
+        <p>Join Vertex Bank today and experience the future of digital banking</p>
+    </div>
+</div>
+
+<!-- 🔹 Form Container -->
+<div class="container">
+    <div class="form-container">
+        <div class="form-progress"></div>
+        
+        <div class="form-content">
+            <% if (message != null) { %>
+                <div class="alert alert-info mb-4">
+                    <strong>📢 </strong><%= message %>
+                </div>
+            <% } %>
+
+            <div class="info-card">
+                <h5>📋 What You'll Need</h5>
+                <ul>
+                    <li>Valid passport and ID number</li>
+                    <li>Current residential address</li>
+                    <li>Monthly income information</li>
+                    <li>Approximately 5 minutes to complete</li>
+                </ul>
+            </div>
+
+            <form action="open-account" method="post">
+                
+                <!-- Personal Details Section -->
+                <div class="section-title">Personal Information</div>
+
+                <div class="mb-4">
+                    <label for="fullName" class="form-label">Full Name *</label>
+                    <input type="text" class="form-control" id="fullName" name="full_name" 
+                           placeholder="Enter your full legal name" required>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <label for="phone" class="form-label">Phone Number *</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" 
+                               placeholder="+971 50 123 4567" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="dob" class="form-label">Date of Birth *</label>
+                        <input type="date" class="form-control" id="dob" name="dob" required>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <label for="age" class="form-label">Age *</label>
+                        <input type="number" class="form-control" id="age" name="age" 
+                               min="18" max="120" placeholder="18" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="nationality" class="form-label">Nationality *</label>
+                        <input type="text" class="form-control" id="nationality" name="nationality" 
+                               placeholder="e.g., UAE" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="passportNumber" class="form-label">Passport Number *</label>
+                        <input type="text" class="form-control" id="passportNumber" name="passport_number" 
+                               placeholder="A12345678" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="idNumber" class="form-label">Emirates ID / National ID *</label>
+                    <input type="text" class="form-control" id="idNumber" name="id_number" 
+                           placeholder="784-1234-1234567-8" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="address" class="form-label">Residential Address *</label>
+                    <textarea class="form-control" id="address" name="address" rows="3" 
+                              placeholder="Enter your complete address" required></textarea>
+                </div>
+
+                <div class="mb-5">
+                    <label for="monthlyIncome" class="form-label">Monthly Income *</label>
+                    <div class="input-group">
+                        <span class="input-group-text">AED</span>
+                        <input type="number" class="form-control" id="monthlyIncome" name="monthly_income" 
+                               min="0" step="0.01" placeholder="10000.00" required>
+                    </div>
+                </div>
+
+                <!-- Account Details Section -->
+                <div class="section-title">Account Configuration</div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <label for="accountType" class="form-label">Account Type *</label>
+                        <select class="form-select" id="accountType" name="account_type" required>
+                            <option value="">Choose your account type...</option>
+                            <option value="SAVINGS">💰 Savings Account</option>
+                            <option value="CURRENT">📊 Current Account</option>
+                            <option value="FIXED_DEPOSIT">🔒 Fixed Deposit Account</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="currency" class="form-label">Base Currency *</label>
+                        <select class="form-select" id="currency" name="currency" required>
+                            <option value="">Select currency...</option>
+                            <option value="AED">🇦🇪 AED - UAE Dirham</option>
+                            <option value="USD">🇺🇸 USD - US Dollar</option>
+                            <option value="EUR">🇪🇺 EUR - Euro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <label for="initialDeposit" class="form-label">Initial Deposit *</label>
+                    <div class="input-group">
+                        <span class="input-group-text">AED</span>
+                        <input type="number" class="form-control" id="initialDeposit" name="initial_deposit" 
+                               min="0" step="0.01" placeholder="5000.00" required>
+                    </div>
+                </div>
+
+                <div class="d-grid mt-5">
+                    <button type="submit" class="btn-submit">
+                        Create My Account →
+                    </button>
+                </div>
+
+                <p class="text-center text-muted mt-4 mb-0">
+                    <small>By creating an account, you agree to our Terms of Service and Privacy Policy</small>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 🔹 Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4 mb-md-0">
+                <h5 class="fw-bold mb-3" style="color: #60a5fa;">Vertex Bank</h5>
+                <p class="mb-0">Smart. Secure. Seamless.<br>Your trusted digital banking partner.</p>
+            </div>
+            <div class="col-md-4 mb-4 mb-md-0">
+                <h6 class="fw-bold mb-3">Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="Dashboard">Dashboard</a></li>
+                    <li class="mb-2"><a href="index.jsp">Home</a></li>
+                    <li class="mb-2"><a href="Support.jsp">Support</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <h6 class="fw-bold mb-3">Contact Us</h6>
+                <p class="mb-1">📍 123 Finance Street, Dubai, UAE</p>
+                <p class="mb-1">📧 support@vertexbank.com</p>
+                <p class="mb-0">📞 +971 500 123 456</p>
+            </div>
+        </div>
+        <div class="footer-divider"></div>
+        <div class="text-center">
+            <p class="mb-0">&copy; 2025 Vertex Bank. All rights reserved.</p>
+            <small class="text-muted">Designed with ❤️ by Vertex Tech Team</small>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+using this style : <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">

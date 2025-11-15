@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public class Account {
     private long accountId;
     private String accountNumber;
-    private long userId;
+    private int userId;
     private String accountType;
     private double balance;
     private String currency;
@@ -16,7 +16,7 @@ public class Account {
     public Account(){}
     
     public Account(ResultSet rs) throws SQLException {
-        this.userId = rs.getLong("user_id");
+        this.userId = rs.getInt("user_id");
         this.accountNumber = rs.getString("account_number");
         this.accountType = rs.getString("account_type");
         this.balance = rs.getDouble("balance");
@@ -40,8 +40,8 @@ public class Account {
     public void setAccountId(long accountId) { this.accountId = accountId; }
     public String getAccountNumber() { return accountNumber; }
     public void setAccountNumber(String accountNumber) { this.accountNumber = accountNumber; }
-    public long getUserId() { return userId; }
-    public void setUserId(long userId) { this.userId = userId; }
+    public int getUserId() { return userId; }
+    public void setUserId(int userId) { this.userId = userId; }
     public String getAccountType() { return accountType; }
     public void setAccountType(String accountType) { this.accountType = accountType; }
     public double getBalance() { return balance; }

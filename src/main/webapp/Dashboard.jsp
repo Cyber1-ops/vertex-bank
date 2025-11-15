@@ -1,5 +1,20 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+    pageEncoding="UTF-8" import="com.bank.models.*"%>
+    <%
+    // 🔒 Session check
+    if (session.getAttribute("user") == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+    
+    // Get user from request attributes (set by Dashboard.java)
+    User user = (User) request.getAttribute("user");
+    if (user == null) {
+        user = (User) session.getAttribute("user");
+    }
+    
+    String message = request.getParameter("message");
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -261,13 +276,13 @@
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
                data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-person-circle"></i> John Doe
+              <i class="bi bi-person-circle"></i> 
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Profile</a></li>
               <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Settings</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+              <li><a class="dropdown-item" href="logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
             </ul>
           </li>
         </ul>
@@ -294,7 +309,7 @@
       <!-- Main Content -->
       <div class="col-md-9 col-lg-10 p-4">
         <div class="page-header">
-          <h2>Welcome back, John! 👋</h2>
+          <h2>Welcome back, <%  out.print(user.getFullName()); %>! 👋</h2>
           <p class="text-muted">Here's what's happening with your account today.</p>
         </div>
 
@@ -305,8 +320,8 @@
               <div class="row align-items-center">
                 <div class="col-md-8">
                   <p class="mb-1 opacity-75">Total Balance</p>
-                  <h3>$45,250.80</h3>
-                  <p class="mb-3 opacity-75">Account: **** **** **** 4589</p>
+                  <h3><%double balance = (double) request.getAttribute("ACbalance"); out.print(balance);%></h3>
+                  <p class="mb-3 opacity-75">Account: <%String ACnumber = (String) request.getAttribute("ACnumber"); out.print(ACnumber);%></p>
                   <div class="d-flex gap-2 flex-wrap">
                     <button class="quick-action-btn"><i class="bi bi-send"></i> Transfer</button>
                     <button class="quick-action-btn"><i class="bi bi-download"></i> Deposit</button>

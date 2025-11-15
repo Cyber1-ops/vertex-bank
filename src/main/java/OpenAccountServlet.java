@@ -1,93 +1,129 @@
 import java.io.IOException;
-import java.sql.*;
-import java.util.Random;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+
+import com.bank.models.Account;
+import com.bank.models.User;
+import com.bank.utils.DatabaseUtil;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/open-account")
 public class OpenAccountServlet extends HttpServlet {
 
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
-            resp.sendRedirect(req.getContextPath() + "/login");
-            return;
-        }
-
-        long userId = (Long) session.getAttribute("userId");
-
-        String fullName = req.getParameter("full_name");
-        String phone = req.getParameter("phone");
-        String dob = req.getParameter("dob");
-        String age = req.getParameter("age");
-        String nationality = req.getParameter("nationality");
-        String passportNumber = req.getParameter("passport_number");
-        String idNumber = req.getParameter("id_number");
-        String address = req.getParameter("address");
-        String monthlyIncome = req.getParameter("monthly_income");
-
-        String accountType = req.getParameter("account_type");
-        String currency = req.getParameter("currency");
-        String initialDepositStr = req.getParameter("initial_deposit");
-        double initialDeposit = 0.0;
-        try { if (initialDepositStr != null) initialDeposit = Double.parseDouble(initialDepositStr); } catch (NumberFormatException ignored) {}
-
-        Connection conn = null;
-        PreparedStatement psUpdateUser = null;
-        PreparedStatement psInsertAccount = null;
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
 
         try {
-            conn = DatabaseUtil.getConnection();
-            conn.setAutoCommit(false);
+            // 1. Authentication Check
+            User user = (User) req.getSession().getAttribute("user");
 
-            psUpdateUser = conn.prepareStatement(
-                "UPDATE `user` SET full_name=?, phone=?, dob=?, age=?, nationality=?, passport_number=?, id_number=?, address=?, monthly_income=? WHERE user_id=?"
-            );
-            psUpdateUser.setString(1, fullName);
-            psUpdateUser.setString(2, phone);
-            psUpdateUser.setString(3, dob);
-            psUpdateUser.setString(4, age);
-            psUpdateUser.setString(5, nationality);
-            psUpdateUser.setString(6, passportNumber);
-            psUpdateUser.setString(7, idNumber);
-            psUpdateUser.setString(8, address);
-            psUpdateUser.setString(9, monthlyIncome);
-            psUpdateUser.setLong(10, userId);
-            psUpdateUser.executeUpdate();
+            if (user == null) {
+                resp.sendRedirect("login.jsp");
+                return;
+            }
 
-            String accountNumber = generateAccountNumber();
-            psInsertAccount = conn.prepareStatement(
-                "INSERT INTO `account`(account_number, user_id, account_type, balance, currency, status, created_at) VALUES(?, ?, ?, ?, ?, 'ACTIVE', NOW())"
-            );
-            psInsertAccount.setString(1, accountNumber);
-            psInsertAccount.setLong(2, userId);
-            psInsertAccount.setString(3, accountType);
-            psInsertAccount.setDouble(4, initialDeposit);
-            psInsertAccount.setString(5, currency);
-            psInsertAccount.executeUpdate();
+            int userId = user.getUserId();
 
-            conn.commit();
-            resp.sendRedirect(req.getContextPath() + "/dashboard");
-        } catch (SQLException e) {
-            try { if (conn != null) conn.rollback(); } catch (SQLException ignored) {}
-            throw new ServletException("DB Error", e);
-        } finally {
-            try { if (psUpdateUser != null) psUpdateUser.close(); } catch (Exception ignored) {}
-            DatabaseUtil.close(conn, psInsertAccount, null);
+            // 2. Retrieve Form Parameters
+            String fullName = req.getParameter("full_name");
+            String phone = req.getParameter("phone");
+            String dobStr = req.getParameter("dob");
+            String ageStr = req.getParameter("age");
+            String nationality = req.getParameter("nationality");
+            String passportNumber = req.getParameter("passport_number");
+            String idNumber = req.getParameter("id_number");
+            String address = req.getParameter("address");
+            String monthlyIncomeStr = req.getParameter("monthly_income");
+            String accountType = req.getParameter("account_type");
+            String currency = req.getParameter("currency");
+            String initialDepositStr = req.getParameter("initial_deposit");
+
+            // 3. Validation: Check for missing fields
+            if (fullName == null || phone == null || dobStr == null || ageStr == null ||
+                nationality == null || passportNumber == null || idNumber == null ||
+                address == null || monthlyIncomeStr == null || accountType == null ||
+                currency == null || initialDepositStr == null) {
+
+                req.setAttribute("error", "All fields are required. Please fill in the complete form.");
+                req.getRequestDispatcher("open-account.jsp").forward(req, resp);
+                return;
+            }
+
+            int age;
+            double monthlyIncome;
+            double initialDeposit;
+            LocalDate dob = null;
+
+            try {
+                age = Integer.parseInt(ageStr);
+                monthlyIncome = Double.parseDouble(monthlyIncomeStr);
+                initialDeposit = Double.parseDouble(initialDepositStr);
+
+                if (dobStr != null && !dobStr.trim().isEmpty()) {
+                    dob = LocalDate.parse(dobStr);
+                }
+            } catch (NumberFormatException e) {
+                req.setAttribute("error", "Invalid number format provided.");
+                req.getRequestDispatcher("open-account.jsp").forward(req, resp);
+                return;
+            } catch (DateTimeParseException e) {
+                req.setAttribute("error", "Invalid date format for Date of Birth. Please use YYYY-MM-DD format.");
+                req.getRequestDispatcher("open-account.jsp").forward(req, resp);
+                return;
+            }
+
+            // 5. Normalize Account Type
+            String normalizedAccountType = accountType.trim().toUpperCase();
+            if (normalizedAccountType.contains("FIXED")) {
+                normalizedAccountType = "FIXED_DEPOSIT";
+            }
+
+            if (!normalizedAccountType.equals("SAVINGS") &&
+                !normalizedAccountType.equals("CURRENT") &&
+                !normalizedAccountType.equals("FIXED_DEPOSIT")) {
+
+                req.setAttribute("error", "Invalid account type selected.");
+                req.getRequestDispatcher("open-account.jsp").forward(req, resp);
+                return;
+            }
+
+            // 7. Update User object with collected details
+            user.setFullName(fullName);
+            user.setPhone(phone);
+            user.setDob(dob); 
+            user.setAge(age);
+            user.setNationality(nationality);
+            user.setPassportNumber(passportNumber);
+            user.setIdNumber(idNumber);
+            user.setAddress(address);
+            user.setMonthlyIncome(monthlyIncome);
+
+            Account account = new Account();
+            account.setUserId(userId);
+            account.setAccountType(normalizedAccountType);
+            account.setCurrency(currency);
+            account.setBalance(initialDeposit);
+            account.setStatus("ACTIVE");
+
+            boolean opened = DatabaseUtil.openAccount(account, user);
+
+            if (opened) {
+                req.getSession().setAttribute("user", user);
+                resp.sendRedirect("Dashboard");
+            } else {
+                req.setAttribute("error", "Failed to open account. Please try again.");
+                req.getRequestDispatcher("open-account.jsp?message=Failed to create account").forward(req, resp);
+            }
+
+        } catch (Exception e) {
+            req.setAttribute("error", "A system error occurred. Please try again later.");
+            req.getRequestDispatcher("open-account.jsp").forward(req, resp);
         }
     }
-
-    private String generateAccountNumber() {
-        Random r = new Random();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 12; i++) sb.append(r.nextInt(10));
-        return sb.toString();
-    }
 }
-
-
