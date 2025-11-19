@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Random;
+import java.util.ArrayList;
 
 import com.bank.models.Account;
 import com.bank.models.User;
@@ -99,6 +100,28 @@ public class DatabaseUtil {
         }
 
         return account;
+    }
+    
+    
+    public static ArrayList<Account> getActiveUserAccounts(int userId) {
+        ArrayList<Account> accounts = new ArrayList<>();
+        String sql = "SELECT * FROM account WHERE user_id = ? AND status = 'ACTIVE'";
+        
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    accounts.add(new Account(rs));
+                }
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return accounts;
     }
 
     public static boolean insertAccount(Account account) {

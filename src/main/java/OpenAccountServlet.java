@@ -11,6 +11,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/open-account")
 public class OpenAccountServlet extends HttpServlet {
@@ -19,18 +20,22 @@ public class OpenAccountServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
+        HttpSession session = req.getSession(false);
+        if (session == null) {
+            resp.sendRedirect("login.jsp");
+            return;
+        }
+
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            resp.sendRedirect("login.jsp");
+            return;
+        }
+
         try {
-            // 1. Authentication Check
-            User user = (User) req.getSession().getAttribute("user");
-
-            if (user == null) {
-                resp.sendRedirect("login.jsp");
-                return;
-            }
-
             int userId = user.getUserId();
 
-            // 2. Retrieve Form Parameters
+            // Retrieve Form Parameters
             String fullName = req.getParameter("full_name");
             String phone = req.getParameter("phone");
             String dobStr = req.getParameter("dob");
@@ -44,41 +49,61 @@ public class OpenAccountServlet extends HttpServlet {
             String currency = req.getParameter("currency");
             String initialDepositStr = req.getParameter("initial_deposit");
 
-            // 3. Validation: Check for missing fields
-            if (fullName == null || phone == null || dobStr == null || ageStr == null ||
-                nationality == null || passportNumber == null || idNumber == null ||
-                address == null || monthlyIncomeStr == null || accountType == null ||
-                currency == null || initialDepositStr == null) {
+            // Validation: Check for missing fields
+            if (fullName == null || fullName.trim().isEmpty() ||
+                phone == null || phone.trim().isEmpty() ||
+                dobStr == null || dobStr.trim().isEmpty() ||
+                ageStr == null || ageStr.trim().isEmpty() ||
+                nationality == null || nationality.trim().isEmpty() ||
+                passportNumber == null || passportNumber.trim().isEmpty() ||
+                idNumber == null || idNumber.trim().isEmpty() ||
+                address == null || address.trim().isEmpty() ||
+                monthlyIncomeStr == null || monthlyIncomeStr.trim().isEmpty() ||
+                accountType == null || accountType.trim().isEmpty() ||
+                currency == null || currency.trim().isEmpty() ||
+                initialDepositStr == null || initialDepositStr.trim().isEmpty()) {
 
                 req.setAttribute("error", "All fields are required. Please fill in the complete form.");
-                req.getRequestDispatcher("open-account.jsp").forward(req, resp);
+                req.getRequestDispatcher("OpenAccount.jsp").forward(req, resp);
                 return;
             }
 
+            // Parse numeric values
             int age;
             double monthlyIncome;
             double initialDeposit;
-            LocalDate dob = null;
+            LocalDate dob;
 
             try {
-                age = Integer.parseInt(ageStr);
-                monthlyIncome = Double.parseDouble(monthlyIncomeStr);
-                initialDeposit = Double.parseDouble(initialDepositStr);
+                age = Integer.parseInt(ageStr.trim());
+                monthlyIncome = Double.parseDouble(monthlyIncomeStr.trim());
+                initialDeposit = Double.parseDouble(initialDepositStr.trim());
+                dob = LocalDate.parse(dobStr.trim());
 
-                if (dobStr != null && !dobStr.trim().isEmpty()) {
-                    dob = LocalDate.parse(dobStr);
+                // Additional validation
+                if (age < 18) {
+                    req.setAttribute("error", "You must be at least 18 years old to open an account.");
+                    req.getRequestDispatcher("OpenAccount.jsp").forward(req, resp);
+                    return;
                 }
+
+                if (monthlyIncome < 0 || initialDeposit < 0) {
+                    req.setAttribute("error", "Income and deposit amounts cannot be negative.");
+                    req.getRequestDispatcher("OpenAccount.jsp").forward(req, resp);
+                    return;
+                }
+
             } catch (NumberFormatException e) {
                 req.setAttribute("error", "Invalid number format provided.");
-                req.getRequestDispatcher("open-account.jsp").forward(req, resp);
+                req.getRequestDispatcher("OpenAccount.jsp").forward(req, resp);
                 return;
             } catch (DateTimeParseException e) {
                 req.setAttribute("error", "Invalid date format for Date of Birth. Please use YYYY-MM-DD format.");
-                req.getRequestDispatcher("open-account.jsp").forward(req, resp);
+                req.getRequestDispatcher("OpenAccount.jsp").forward(req, resp);
                 return;
             }
 
-            // 5. Normalize Account Type
+            // Normalize Account Type
             String normalizedAccountType = accountType.trim().toUpperCase();
             if (normalizedAccountType.contains("FIXED")) {
                 normalizedAccountType = "FIXED_DEPOSIT";
@@ -89,41 +114,45 @@ public class OpenAccountServlet extends HttpServlet {
                 !normalizedAccountType.equals("FIXED_DEPOSIT")) {
 
                 req.setAttribute("error", "Invalid account type selected.");
-                req.getRequestDispatcher("open-account.jsp").forward(req, resp);
+                req.getRequestDispatcher("OpenAccount.jsp").forward(req, resp);
                 return;
             }
 
-            // 7. Update User object with collected details
-            user.setFullName(fullName);
-            user.setPhone(phone);
-            user.setDob(dob); 
+            // Update User object
+            user.setFullName(fullName.trim());
+            user.setPhone(phone.trim());
+            user.setDob(dob);
             user.setAge(age);
-            user.setNationality(nationality);
-            user.setPassportNumber(passportNumber);
-            user.setIdNumber(idNumber);
-            user.setAddress(address);
+            user.setNationality(nationality.trim());
+            user.setPassportNumber(passportNumber.trim());
+            user.setIdNumber(idNumber.trim());
+            user.setAddress(address.trim());
             user.setMonthlyIncome(monthlyIncome);
 
+            // Create Account object
             Account account = new Account();
             account.setUserId(userId);
             account.setAccountType(normalizedAccountType);
-            account.setCurrency(currency);
+            account.setCurrency(currency.trim());
             account.setBalance(initialDeposit);
             account.setStatus("ACTIVE");
 
+            // Save to database
             boolean opened = DatabaseUtil.openAccount(account, user);
 
             if (opened) {
-                req.getSession().setAttribute("user", user);
-                resp.sendRedirect("Dashboard");
+                // Update session with new user data
+                session.setAttribute("user", user);
+                resp.sendRedirect(req.getContextPath() + "/Dashboard"); 
             } else {
                 req.setAttribute("error", "Failed to open account. Please try again.");
-                req.getRequestDispatcher("open-account.jsp?message=Failed to create account").forward(req, resp);
+                req.getRequestDispatcher("OpenAccount.jsp").forward(req, resp);
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             req.setAttribute("error", "A system error occurred. Please try again later.");
-            req.getRequestDispatcher("open-account.jsp").forward(req, resp);
+            req.getRequestDispatcher("OpenAccount.jsp").forward(req, resp);
         }
     }
 }

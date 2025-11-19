@@ -367,7 +367,7 @@
           <a class="nav-link" href="#"><i class="bi bi-arrow-left-right"></i> Transactions</a>
           
           <div class="section-title">Management</div>
-          <a class="nav-link" href="#"><i class="bi bi-credit-card"></i> Cards</a>
+          <a class="nav-link" href="AdminCardServlet"><i class="bi bi-credit-card"></i> Cards</a>
           <a class="nav-link" href="#"><i class="bi bi-cash-stack"></i> Loans</a>
           <a class="nav-link" href="#"><i class="bi bi-graph-up"></i> Investments</a>
           <a class="nav-link" href="#"><i class="bi bi-exclamation-triangle"></i> Reports</a>
@@ -430,8 +430,12 @@
             <div class="card stat-card warning">
               <div class="d-flex justify-content-between align-items-center">
                 <div>
-                  <p>Pending Requests</p>
-                  <h3>38</h3>
+                  <p>Pending Card Applications</p>
+                  <h3><% 
+                    Integer pendingCards = (Integer) request.getAttribute("pendingCardApps");
+                    if (pendingCards == null) pendingCards = 0;
+                    out.print(pendingCards); 
+                  %></h3>
                   <small class="text-warning"><i class="bi bi-clock"></i> Needs Review</small>
                 </div>
                 <div class="icon-wrapper">

@@ -80,7 +80,12 @@
 
       <button type="submit" class="btn btn-primary w-100 py-2">Login</button>
     </form>
-
+<% 
+String message = (String) request.getAttribute("message");  
+if(message != null && !message.trim().isEmpty()) {
+    out.print("<div class='alert alert-info'>" + message + "</div>");
+}  
+%>
     <p class="mt-4 mb-0">Don't have an account? <a href="signup.jsp">Sign up</a></p>
     <a href="index.jsp" class="d-block mt-3">← Back to Home</a>
   </div>

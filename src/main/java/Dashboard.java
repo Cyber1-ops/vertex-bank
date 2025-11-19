@@ -1,14 +1,17 @@
-
 import java.io.IOException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession; // ✅ ADDED
 
 import com.bank.models.User;
 import com.bank.models.Account;
+import com.bank.models.Card;
 import com.bank.utils.DatabaseUtil;
+import com.bank.utils.CardDBUtil;
+import java.util.ArrayList;
 
 @WebServlet("/Dashboard")
 public class Dashboard extends HttpServlet {
@@ -17,11 +20,15 @@ public class Dashboard extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        User user = (User) req.getSession().getAttribute("user");
+        HttpSession session = req.getSession(false); // ✅ FIXED: Check session first
+        if (session == null) {
+            resp.sendRedirect(req.getContextPath() + "/index.jsp");
+            return;
+        }
 
-        // User not logged in
+        User user = (User) session.getAttribute("user");
         if (user == null) {
-            resp.sendRedirect("index.jsp");
+            resp.sendRedirect(req.getContextPath() + "/index.jsp");
             return;
         }
 
@@ -32,10 +39,15 @@ public class Dashboard extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        User user = (User) req.getSession().getAttribute("user");
+        HttpSession session = req.getSession(false); // ✅ FIXED: Check session first
+        if (session == null) {
+            resp.sendRedirect(req.getContextPath() + "/index.jsp");
+            return;
+        }
 
+        User user = (User) session.getAttribute("user");
         if (user == null) {
-            resp.sendRedirect("index.jsp");
+            resp.sendRedirect(req.getContextPath() + "/index.jsp");
             return;
         }
 
@@ -49,7 +61,7 @@ public class Dashboard extends HttpServlet {
 
         // User has no account → go to create/welcome page
         if (AC == null || AC.getAccountNumber() == null || AC.getAccountNumber().isEmpty()) {
-            req.getRequestDispatcher("welcome-no-account.jsp").forward(req, resp);
+        	resp.sendRedirect(req.getContextPath() + "/OpenAccount.jsp");
             return;
         }
 
@@ -60,7 +72,10 @@ public class Dashboard extends HttpServlet {
         req.setAttribute("ACstatus", AC.getStatus());
         req.setAttribute("ACbalance", AC.getBalance());
 
+        // Load user cards
+        ArrayList<Card> cards = CardDBUtil.getUserCards(user.getUserId());
+        req.setAttribute("cards", cards);
+
         req.getRequestDispatcher("Dashboard.jsp").forward(req, resp);
-        return;
     }
 }

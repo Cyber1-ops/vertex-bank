@@ -58,14 +58,19 @@ public class AdminDao extends DatabaseUtil {
 	        return -1; // Error indicator
 	    }
 	  
-	  public static void log(long userId, String action, String ip, String details) {
+	  public static void log(Integer userId, String action, String ip, String details) {
 	        String sql = "INSERT INTO AUDIT_LOG (user_id, action, ip_address, details, timestamp) "
 	                     + "VALUES (?, ?, ?, ?, NOW())";
 
 	        try (Connection conn = DatabaseUtil.getConnection();
 	             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-	            ps.setLong(1, userId);
+	            // Handle NULL user_id: if userId is 0 or less, set it as NULL
+	            if (userId <= 0) {
+	                ps.setNull(1, java.sql.Types.BIGINT);
+	            } else {
+	                ps.setInt(1, userId);
+	            }
 	            ps.setString(2, action);
 	            ps.setString(3, ip);
 	            ps.setString(4, details);

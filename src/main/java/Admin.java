@@ -15,6 +15,8 @@ public class Admin extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
        req.setAttribute("allbalance",getallbalance(AdminDao.getallAccount()));
        req.setAttribute("Ucount", AdminDao.countUsers());
+       req.setAttribute("pendingCardApps", com.bank.utils.CardDBUtil.countPendingApplications());
+       req.setAttribute("totalCards", com.bank.utils.CardDBUtil.countTotalCards());
        req.getRequestDispatcher("Admin.jsp").forward(req, resp);
        return;
 	}
@@ -24,6 +26,8 @@ public class Admin extends HttpServlet {
         String password = req.getParameter("pass");
        req.setAttribute("allbalance",getallbalance(AdminDao.getallAccount()));
        req.setAttribute("Ucount", AdminDao.countUsers());
+       req.setAttribute("pendingCardApps", com.bank.utils.CardDBUtil.countPendingApplications());
+       req.setAttribute("totalCards", com.bank.utils.CardDBUtil.countTotalCards());
        req.getRequestDispatcher("Admin.jsp").forward(req, resp);
        return;
                 

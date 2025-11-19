@@ -1,19 +1,18 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8" import="com.bank.models.*"%>
+    pageEncoding="UTF-8" import="com.bank.models.*, java.util.List, java.util.ArrayList"%>
     <%
-    // 🔒 Session check
-    if (session.getAttribute("user") == null) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
+  
     
-    // Get user from request attributes (set by Dashboard.java)
     User user = (User) request.getAttribute("user");
     if (user == null) {
         user = (User) session.getAttribute("user");
     }
     
     String message = request.getParameter("message");
+    
+    // Get cards from request
+    List<Card> cards = (List<Card>) request.getAttribute("cards");
+    if (cards == null) cards = new ArrayList<>();
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -298,11 +297,11 @@
           <a class="nav-link active" href="#"><i class="bi bi-speedometer2"></i> Dashboard</a>
           <a class="nav-link" href="#"><i class="bi bi-wallet2"></i> Accounts</a>
           <a class="nav-link" href="#"><i class="bi bi-arrow-left-right"></i> Transactions</a>
-          <a class="nav-link" href="#"><i class="bi bi-credit-card"></i> Cards</a>
+          <a class="nav-link" href="CardServlet"><i class="bi bi-credit-card"></i> Cards</a>
           <a class="nav-link" href="#"><i class="bi bi-graph-up"></i> Investments</a>
           <a class="nav-link" href="#"><i class="bi bi-file-text"></i> Statements</a>
-          <a class="nav-link" href="#"><i class="bi bi-people"></i> Beneficiaries</a>
-          <a class="nav-link" href="#"><i class="bi bi-headset"></i> Support</a>
+          <a class="nav-link" href="beneficiaryServlet"><i class="bi bi-people"></i> Beneficiaries</a>
+          <a class="nav-link" href="Support.jsp"><i class="bi bi-headset"></i> Support</a>
         </nav>
       </div>
 
@@ -436,25 +435,54 @@
                 <h5 class="mb-0">My Cards</h5>
               </div>
               <div class="card-body">
-                <div class="mb-3 p-3 rounded" style="background: linear-gradient(135deg, #0b1220 0%, #1e3a8a 100%); color: white;">
-                  <div class="d-flex justify-content-between align-items-start mb-3">
-                    <span style="font-size: 1.5rem;">💳</span>
-                    <span class="badge bg-light text-dark">Active</span>
-                  </div>
-                  <p class="mb-1" style="font-size: 0.85rem; opacity: 0.8;">Card Number</p>
-                  <p class="mb-2" style="font-size: 1.1rem; letter-spacing: 2px;">**** 4589</p>
-                  <div class="d-flex justify-content-between">
-                    <div>
-                      <small style="opacity: 0.7;">Valid Thru</small><br>
-                      <small>12/27</small>
+                <% if (cards != null && !cards.isEmpty()) { %>
+                  <% for (Card card : cards) { %>
+                    <div class="mb-3 p-3 rounded" style="background: linear-gradient(135deg, #0b1220 0%, #1e3a8a 100%); color: white;">
+                      <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span style="font-size: 1.5rem;">💳</span>
+                        <span class="badge <%= card.getStatus().equals("ACTIVE") ? "bg-success" : "bg-warning" %>">
+                          <%= card.getStatus() %>
+                        </span>
+                      </div>
+                      <p class="mb-1" style="font-size: 0.85rem; opacity: 0.8;">Card Number</p>
+                      <p class="mb-2" style="font-size: 1.1rem; letter-spacing: 2px; font-family: 'Courier New', monospace;">
+                        <%= card.getMaskedCardNumber() %>
+                      </p>
+                      <div class="d-flex justify-content-between">
+                        <div>
+                          <small style="opacity: 0.7;">Valid Thru</small><br>
+                          <small>
+                            <% if (card.getExpiryDate() != null) {
+                                String expiryStr = card.getExpiryDate().toString();
+                                // Format: YYYY-MM-DD -> MM/YY
+                                String[] parts = expiryStr.split("-");
+                                if (parts.length >= 2) {
+                                  out.print(parts[1] + "/" + parts[0].substring(2));
+                                } else {
+                                  out.print("N/A");
+                                }
+                              } else {
+                                out.print("N/A");
+                              } %>
+                          </small>
+                        </div>
+                        <div class="text-end">
+                          <small style="opacity: 0.7;">Type</small><br>
+                          <small><%= card.getCardType() %></small>
+                        </div>
+                      </div>
                     </div>
-                    <div class="text-end">
-                      <small style="opacity: 0.7;">CVV</small><br>
-                      <small>***</small>
-                    </div>
+                  <% } %>
+                  <a href="CardServlet" class="btn btn-primary w-100">Manage Cards</a>
+                <% } else { %>
+                  <div class="text-center py-4">
+                    <i class="bi bi-credit-card-2-front" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 15px;"></i>
+                    <p class="text-muted mb-3">You don't have any cards yet.</p>
+                    <a href="CardServlet" class="btn btn-primary w-100">
+                      <i class="bi bi-plus-circle"></i> Apply for Card
+                    </a>
                   </div>
-                </div>
-                <button class="btn btn-primary w-100">Manage Cards</button>
+                <% } %>
               </div>
             </div>
 
