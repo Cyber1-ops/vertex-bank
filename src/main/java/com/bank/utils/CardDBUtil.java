@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Random;
-
 import com.bank.models.Card;
 import com.bank.models.CardApplication;
 import com.bank.models.Account;
@@ -16,7 +15,7 @@ public class CardDBUtil {
     
     private static Connection getConnection() throws SQLException {
         return DatabaseUtil.getConnection();
-    }
+    } 
     
     // Get all cards for a user (through their accounts)
     public static ArrayList<Card> getUserCards(long userId) {

@@ -23,9 +23,11 @@ public class AuditLogServlet extends HttpServlet {
 	     
 	     // Handle search functionality
 	     String searchQuery = request.getParameter("search");
+	     List<AuditLog> filteredList = list;
+	     
 	     if (searchQuery != null && !searchQuery.trim().isEmpty()) {
 	         String searchLower = searchQuery.toLowerCase().trim();
-	         List<AuditLog> filteredList = list.stream()
+	         filteredList = list.stream()
 	             .filter(log -> 
 	                 String.valueOf(log.getLogId()).contains(searchLower) ||
 	                 String.valueOf(log.getUserId()).contains(searchLower) ||
@@ -34,11 +36,32 @@ public class AuditLogServlet extends HttpServlet {
 	                 (log.getDetails() != null && log.getDetails().toLowerCase().contains(searchLower))
 	             )
 	             .collect(Collectors.toList());
-	         request.setAttribute("logs", filteredList);
 	         request.setAttribute("searchQuery", searchQuery);
-	     } else {
-	         request.setAttribute("logs", list);
 	     }
+	     
+	     // Handle pagination
+	     int page = 1;
+	     int pageSize = 20;
+	     try {
+	         String pageParam = request.getParameter("page");
+	         if (pageParam != null && !pageParam.isEmpty()) {
+	             page = Integer.parseInt(pageParam);
+	         }
+	     } catch (NumberFormatException e) {
+	         page = 1;
+	     }
+	     
+	     int totalItems = filteredList.size();
+	     int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+	     int startIndex = (page - 1) * pageSize;
+	     int endIndex = Math.min(startIndex + pageSize, totalItems);
+	     
+	     List<AuditLog> paginatedList = filteredList.subList(startIndex, endIndex);
+	     
+	     request.setAttribute("logs", paginatedList);
+	     request.setAttribute("currentPage", page);
+	     request.setAttribute("totalPages", totalPages);
+	     request.setAttribute("totalItems", totalItems);
 	     
 	     // Forward the request to the JSP page
 	     request.getRequestDispatcher("AUDIT_LOG.jsp").forward(request, response);

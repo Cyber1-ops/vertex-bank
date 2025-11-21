@@ -192,6 +192,102 @@ public class TransferDBUtil extends DatabaseUtil {
 	    }
 	}
 
+	public static List<TransactionRecord> getUserTransactions(int userId, int limit) {
+	    List<TransactionRecord> transactions = new ArrayList<>();
+	    String sql = "SELECT t.* FROM transaction t " +
+	                 "INNER JOIN account a ON (t.from_account_id = a.account_id OR t.to_account_id = a.account_id) " +
+	                 "WHERE a.user_id = ? ORDER BY t.timestamp DESC LIMIT ?";
+	    
+	    try (Connection conn = getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
+	        
+	        ps.setInt(1, userId);
+	        ps.setInt(2, limit);
+	        
+	        try (ResultSet rs = ps.executeQuery()) {
+	            while (rs.next()) {
+	                transactions.add(new TransactionRecord(rs));
+	            }
+	        }
+	        
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    
+	    return transactions;
+	}
+
+	public static double getMonthlyIncome(int userId, int month, int year) {
+	    String sql = "SELECT COALESCE(SUM(t.amount), 0) as total FROM transaction t " +
+	                 "INNER JOIN account a ON t.to_account_id = a.account_id " +
+	                 "WHERE a.user_id = ? AND MONTH(t.timestamp) = ? AND YEAR(t.timestamp) = ?";
+	    
+	    try (Connection conn = getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
+	        
+	        ps.setInt(1, userId);
+	        ps.setInt(2, month);
+	        ps.setInt(3, year);
+	        
+	        try (ResultSet rs = ps.executeQuery()) {
+	            if (rs.next()) {
+	                return rs.getDouble("total");
+	            }
+	        }
+	        
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    
+	    return 0.0;
+	}
+
+	public static double getMonthlyExpenses(int userId, int month, int year) {
+	    String sql = "SELECT COALESCE(SUM(t.amount), 0) as total FROM transaction t " +
+	                 "INNER JOIN account a ON t.from_account_id = a.account_id " +
+	                 "WHERE a.user_id = ? AND MONTH(t.timestamp) = ? AND YEAR(t.timestamp) = ?";
+	    
+	    try (Connection conn = getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
+	        
+	        ps.setInt(1, userId);
+	        ps.setInt(2, month);
+	        ps.setInt(3, year);
+	        
+	        try (ResultSet rs = ps.executeQuery()) {
+	            if (rs.next()) {
+	                return rs.getDouble("total");
+	            }
+	        }
+	        
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    
+	    return 0.0;
+	}
+
+	public static List<TransactionRecord> getAllTransactions(int limit) {
+	    List<TransactionRecord> transactions = new ArrayList<>();
+	    String sql = "SELECT * FROM transaction ORDER BY timestamp DESC LIMIT ?";
+	    
+	    try (Connection conn = getConnection();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
+	        
+	        ps.setInt(1, limit);
+	        
+	        try (ResultSet rs = ps.executeQuery()) {
+	            while (rs.next()) {
+	                transactions.add(new TransactionRecord(rs));
+	            }
+	        }
+	        
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    
+	    return transactions;
+	}
 	
 }
 

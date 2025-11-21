@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8" import="com.bank.models.*, java.util.List, java.util.ArrayList"%>
+    pageEncoding="UTF-8" import="com.bank.models.*, java.util.List, java.util.ArrayList, java.time.format.DateTimeFormatter"%>
     <%
   
     
@@ -13,6 +13,26 @@
     // Get cards from request
     List<Card> cards = (List<Card>) request.getAttribute("cards");
     if (cards == null) cards = new ArrayList<>();
+    
+    // Get transactions from request
+    List<TransactionRecord> transactions = (List<TransactionRecord>) request.getAttribute("transactions");
+    if (transactions == null) transactions = new ArrayList<>();
+    
+    // Get stats
+    Double monthlyIncome = (Double) request.getAttribute("monthlyIncome");
+    if (monthlyIncome == null) monthlyIncome = 0.0;
+    
+    Double monthlyExpenses = (Double) request.getAttribute("monthlyExpenses");
+    if (monthlyExpenses == null) monthlyExpenses = 0.0;
+    
+    Double totalSavings = (Double) request.getAttribute("totalSavings");
+    if (totalSavings == null) totalSavings = 0.0;
+    
+    // Get account ID for transaction context
+    Long userAccountId = (Long) request.getAttribute("userAccountId");
+    
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy");
+    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,240 +49,14 @@
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f8fafc;
-      color: #1e293b;
-    }
-
-    .navbar {
-      background-color: #0b1220;
-    }
-
-    .navbar-brand {
-      font-weight: 700;
-      color: #60a5fa !important;
-      font-size: 1.4rem;
-    }
-
-    .nav-link {
-      color: #e2e8f0 !important;
-      margin: 0 8px;
-    }
-
-    .nav-link:hover {
-      color: #60a5fa !important;
-    }
-
-    .sidebar {
-      background-color: #0b1220;
-      min-height: calc(100vh - 76px);
-      padding: 20px 0;
-    }
-
-    .sidebar .nav-link {
-      color: #cbd5e1;
-      padding: 12px 20px;
-      margin: 4px 10px;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-    }
-
-    .sidebar .nav-link:hover,
-    .sidebar .nav-link.active {
-      background-color: #1e3a8a;
-      color: #60a5fa;
-    }
-
-    .sidebar .nav-link i {
-      margin-right: 10px;
-      width: 20px;
-    }
-
-    .card {
-      border: none;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-    }
-
-    .card-header {
-      background-color: transparent;
-      border-bottom: 1px solid #e2e8f0;
-      font-weight: 600;
-      padding: 1rem 1.5rem;
-    }
-
-    .balance-card {
-      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-      color: white;
-      padding: 30px;
-    }
-
-    .balance-card h3 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin: 10px 0;
-    }
-
-    .quick-action-btn {
-      background-color: white;
-      color: #1e3a8a;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .quick-action-btn:hover {
-      background-color: #f1f5f9;
-      transform: translateY(-2px);
-    }
-
-    .stat-card {
-      text-align: center;
-      padding: 20px;
-    }
-
-    .stat-card i {
-      font-size: 2.5rem;
-      color: #2563eb;
-      margin-bottom: 10px;
-    }
-
-    .stat-card h4 {
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin: 10px 0 5px 0;
-      color: #1e293b;
-    }
-
-    .stat-card p {
-      color: #64748b;
-      font-size: 0.9rem;
-      margin: 0;
-    }
-
-    .transaction-item {
-      display: flex;
-      align-items: center;
-      padding: 15px;
-      border-bottom: 1px solid #f1f5f9;
-      transition: background-color 0.2s ease;
-    }
-
-    .transaction-item:hover {
-      background-color: #f8fafc;
-    }
-
-    .transaction-item:last-child {
-      border-bottom: none;
-    }
-
-    .transaction-icon {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 15px;
-      font-size: 1.2rem;
-    }
-
-    .transaction-icon.credit {
-      background-color: #dcfce7;
-      color: #16a34a;
-    }
-
-    .transaction-icon.debit {
-      background-color: #fee2e2;
-      color: #dc2626;
-    }
-
-    .transaction-details {
-      flex-grow: 1;
-    }
-
-    .transaction-details h6 {
-      margin: 0 0 4px 0;
-      font-weight: 600;
-      color: #1e293b;
-    }
-
-    .transaction-details small {
-      color: #64748b;
-    }
-
-    .transaction-amount {
-      font-weight: 700;
-      font-size: 1.1rem;
-    }
-
-    .transaction-amount.credit {
-      color: #16a34a;
-    }
-
-    .transaction-amount.debit {
-      color: #dc2626;
-    }
-
-    .btn-primary {
-      background-color: #2563eb;
-      border: none;
-      transition: all 0.3s ease;
-    }
-
-    .btn-primary:hover {
-      background-color: #1d4ed8;
-    }
-
-    .page-header {
-      padding: 30px 0 20px 0;
-    }
-
-    .page-header h2 {
-      font-weight: 700;
-      color: #0b1220;
-    }
-
-    .badge-status {
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-
-    .badge-completed {
-      background-color: #dcfce7;
-      color: #16a34a;
-    }
-
-    .badge-pending {
-      background-color: #fef3c7;
-      color: #d97706;
-    }
-
-    @media (max-width: 768px) {
-      .sidebar {
-        min-height: auto;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
   <!-- Navigation Bar -->
-  <nav class="navbar navbar-expand-lg navbar-dark py-3">
+  <nav class="navbar navbar-expand-lg navbar-dark py-2">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Vertex Bank</a>
+      <a class="navbar-brand" href="Dashboard"><img src="logo/logo_vertex.png" alt="Vertex Bank Logo" class="logo-img"></a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -270,16 +64,18 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav align-items-center">
           <li class="nav-item">
-            <a class="nav-link" href="#"><i class="bi bi-bell"></i> Notifications</a>
+            <a class="nav-link" href="Support.jsp"><i class="bi bi-headset"></i> Support</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" 
                data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-person-circle"></i> 
+              <i class="bi bi-person-circle"></i> <%= user.getFullName() %>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-              <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Profile</a></li>
-              <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Settings</a></li>
+              <li><a class="dropdown-item" href="profile"><i class="bi bi-person"></i> Profile</a></li>
+              <li><a class="dropdown-item" href="settings"><i class="bi bi-gear"></i> Settings</a></li>
+              <li><a class="dropdown-item" href="accounts"><i class="bi bi-wallet2"></i> Accounts</a></li>
+              <li><a class="dropdown-item" href="statement"><i class="bi bi-file-text"></i> Statement</a></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
             </ul>
@@ -294,13 +90,15 @@
       <!-- Sidebar -->
       <div class="col-md-3 col-lg-2 p-0 sidebar d-none d-md-block">
         <nav class="nav flex-column">
-          <a class="nav-link active" href="#"><i class="bi bi-speedometer2"></i> Dashboard</a>
-          <a class="nav-link" href="#"><i class="bi bi-wallet2"></i> Accounts</a>
-          <a class="nav-link" href="#"><i class="bi bi-arrow-left-right"></i> Transactions</a>
+          <a class="nav-link active" href="Dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+          <a class="nav-link" href="accounts"><i class="bi bi-wallet2"></i> Accounts</a>
+          <a class="nav-link" href="TransferServlet"><i class="bi bi-arrow-left-right"></i> Transfers</a>
           <a class="nav-link" href="CardServlet"><i class="bi bi-credit-card"></i> Cards</a>
-          <a class="nav-link" href="#"><i class="bi bi-graph-up"></i> Investments</a>
-          <a class="nav-link" href="#"><i class="bi bi-file-text"></i> Statements</a>
+          <a class="nav-link" href="#investments"><i class="bi bi-graph-up"></i> Investments</a>
+          <a class="nav-link" href="statement"><i class="bi bi-file-text"></i> Statements</a>
           <a class="nav-link" href="beneficiaryServlet"><i class="bi bi-people"></i> Beneficiaries</a>
+          <a class="nav-link" href="profile"><i class="bi bi-person"></i> Profile</a>
+          <a class="nav-link" href="settings"><i class="bi bi-gear"></i> Settings</a>
           <a class="nav-link" href="Support.jsp"><i class="bi bi-headset"></i> Support</a>
         </nav>
       </div>
@@ -315,16 +113,25 @@
         <!-- Balance Card -->
         <div class="row mb-4">
           <div class="col-12">
-            <div class="card balance-card">
+            <div class="card balance-card" id="accounts">
               <div class="row align-items-center">
                 <div class="col-md-8">
                   <p class="mb-1 opacity-75">Total Balance</p>
                   <h3><%double balance = (double) request.getAttribute("ACbalance"); out.print(balance);%></h3>
                   <p class="mb-3 opacity-75">Account: <%String ACnumber = (String) request.getAttribute("ACnumber"); out.print(ACnumber);%></p>
                   <div class="d-flex gap-2 flex-wrap">
-                    <button class="quick-action-btn"><i class="bi bi-send"></i> Transfer</button>
-                    <button class="quick-action-btn"><i class="bi bi-download"></i> Deposit</button>
-                    <button class="quick-action-btn"><i class="bi bi-credit-card"></i> Pay Bills</button>
+                   <a href="TransferServlet" class="btn btn-primary quick-action-btn">
+    <i class="bi bi-send"></i> Transfer
+</a>
+
+<a href="deposit" class="btn btn-primary quick-action-btn">
+    <i class="bi bi-download"></i> Deposit
+</a>
+
+<button class="btn btn-primary quick-action-btn">
+    <i class="bi bi-credit-card"></i> Pay Bills
+</button>
+
                   </div>
                 </div>
                 <div class="col-md-4 text-center d-none d-md-block">
@@ -336,25 +143,25 @@
         </div>
 
         <!-- Stats Cards -->
-        <div class="row mb-4 g-3">
+        <div class="row mb-4 g-3" id="investments">
           <div class="col-md-4">
             <div class="card stat-card">
               <i class="bi bi-arrow-up-circle"></i>
-              <h4>$12,450</h4>
+              <h4><%= String.format("%.2f", monthlyIncome) %></h4>
               <p>Income This Month</p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="card stat-card">
               <i class="bi bi-arrow-down-circle"></i>
-              <h4>$8,230</h4>
+              <h4><%= String.format("%.2f", monthlyExpenses) %></h4>
               <p>Expenses This Month</p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="card stat-card">
               <i class="bi bi-graph-up-arrow"></i>
-              <h4>$28,560</h4>
+              <h4><%= String.format("%.2f", totalSavings) %></h4>
               <p>Total Savings</p>
             </div>
           </div>
@@ -363,66 +170,43 @@
         <div class="row g-4">
           <!-- Recent Transactions -->
           <div class="col-lg-8">
-            <div class="card">
+            <div class="card" id="transactions">
               <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Recent Transactions</h5>
-                <a href="#" class="text-decoration-none">View All</a>
+                <a href="TransferServlet" class="text-decoration-none">View All</a>
               </div>
               <div class="card-body p-0">
-                <div class="transaction-item">
-                  <div class="transaction-icon credit">
-                    <i class="bi bi-arrow-down"></i>
+                <% if (transactions != null && !transactions.isEmpty()) { %>
+                  <% for (TransactionRecord txn : transactions) { 
+                      boolean isCredit = (userAccountId != null && txn.getToAccountId() != null && txn.getToAccountId().equals(userAccountId));
+                      String iconClass = isCredit ? "credit" : "debit";
+                      String amountClass = isCredit ? "credit" : "debit";
+                      String amountPrefix = isCredit ? "+" : "-";
+                      String description = txn.getDescription() != null ? txn.getDescription() : txn.getTransactionType();
+                      String dateStr = "";
+                      String timeStr = "";
+                      if (txn.getTimestamp() != null) {
+                          dateStr = txn.getTimestamp().format(dateFormatter);
+                          timeStr = txn.getTimestamp().format(timeFormatter);
+                      }
+                  %>
+                    <div class="transaction-item">
+                      <div class="transaction-icon <%= iconClass %>">
+                        <i class="bi bi-<%= isCredit ? "arrow-down" : "arrow-up" %>"></i>
+                      </div>
+                      <div class="transaction-details">
+                        <h6><%= description %></h6>
+                        <small><%= dateStr %> • <%= timeStr %></small>
+                      </div>
+                      <div class="transaction-amount <%= amountClass %>"><%= amountPrefix %><%= String.format("%.2f", txn.getAmount()) %></div>
+                    </div>
+                  <% } %>
+                <% } else { %>
+                  <div class="text-center py-5">
+                    <i class="bi bi-inbox" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 15px;"></i>
+                    <p class="text-muted">No transactions found.</p>
                   </div>
-                  <div class="transaction-details">
-                    <h6>Salary Deposit</h6>
-                    <small>Nov 5, 2025 • 09:30 AM</small>
-                  </div>
-                  <div class="transaction-amount credit">+$5,200.00</div>
-                </div>
-
-                <div class="transaction-item">
-                  <div class="transaction-icon debit">
-                    <i class="bi bi-arrow-up"></i>
-                  </div>
-                  <div class="transaction-details">
-                    <h6>Rent Payment</h6>
-                    <small>Nov 3, 2025 • 02:15 PM</small>
-                  </div>
-                  <div class="transaction-amount debit">-$1,500.00</div>
-                </div>
-
-                <div class="transaction-item">
-                  <div class="transaction-icon debit">
-                    <i class="bi bi-cart"></i>
-                  </div>
-                  <div class="transaction-details">
-                    <h6>Shopping - Amazon</h6>
-                    <small>Nov 2, 2025 • 05:45 PM</small>
-                  </div>
-                  <div class="transaction-amount debit">-$245.50</div>
-                </div>
-
-                <div class="transaction-item">
-                  <div class="transaction-icon credit">
-                    <i class="bi bi-arrow-down"></i>
-                  </div>
-                  <div class="transaction-details">
-                    <h6>Freelance Project</h6>
-                    <small>Nov 1, 2025 • 11:20 AM</small>
-                  </div>
-                  <div class="transaction-amount credit">+$1,800.00</div>
-                </div>
-
-                <div class="transaction-item">
-                  <div class="transaction-icon debit">
-                    <i class="bi bi-lightning"></i>
-                  </div>
-                  <div class="transaction-details">
-                    <h6>Utility Bill</h6>
-                    <small>Oct 31, 2025 • 08:00 AM</small>
-                  </div>
-                  <div class="transaction-amount debit">-$185.30</div>
-                </div>
+                <% } %>
               </div>
             </div>
           </div>
@@ -487,7 +271,7 @@
             </div>
 
             <!-- Upcoming Bills -->
-            <div class="card">
+            <div class="card" id="statements">
               <div class="card-header">
                 <h5 class="mb-0">Upcoming Bills</h5>
               </div>

@@ -9,9 +9,13 @@ import jakarta.servlet.http.HttpSession; // ✅ ADDED
 import com.bank.models.User;
 import com.bank.models.Account;
 import com.bank.models.Card;
+import com.bank.models.TransactionRecord;
 import com.bank.utils.DatabaseUtil;
 import com.bank.utils.CardDBUtil;
+import com.bank.utils.TransferDBUtil;
 import java.util.ArrayList;
+import java.util.List;
+import java.time.LocalDate;
 
 @WebServlet("/Dashboard")
 public class Dashboard extends HttpServlet {
@@ -71,10 +75,28 @@ public class Dashboard extends HttpServlet {
         req.setAttribute("ACcurrency", AC.getCurrency());
         req.setAttribute("ACstatus", AC.getStatus());
         req.setAttribute("ACbalance", AC.getBalance());
+        req.setAttribute("userAccountId", AC.getAccountId());
 
         // Load user cards
         ArrayList<Card> cards = CardDBUtil.getUserCards(user.getUserId());
         req.setAttribute("cards", cards);
+
+        // Load recent transactions
+        List<TransactionRecord> transactions = TransferDBUtil.getUserTransactions(user.getUserId(), 5);
+        req.setAttribute("transactions", transactions);
+
+        // Calculate monthly income and expenses
+        LocalDate now = LocalDate.now();
+        int currentMonth = now.getMonthValue();
+        int currentYear = now.getYear();
+        
+        double monthlyIncome = TransferDBUtil.getMonthlyIncome(user.getUserId(), currentMonth, currentYear);
+        double monthlyExpenses = TransferDBUtil.getMonthlyExpenses(user.getUserId(), currentMonth, currentYear);
+        double totalSavings = AC.getBalance();
+
+        req.setAttribute("monthlyIncome", monthlyIncome);
+        req.setAttribute("monthlyExpenses", monthlyExpenses);
+        req.setAttribute("totalSavings", totalSavings);
 
         req.getRequestDispatcher("Dashboard.jsp").forward(req, resp);
     }

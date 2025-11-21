@@ -17,6 +17,12 @@ public class Admin extends HttpServlet {
        req.setAttribute("Ucount", AdminDao.countUsers());
        req.setAttribute("pendingCardApps", com.bank.utils.CardDBUtil.countPendingApplications());
        req.setAttribute("totalCards", com.bank.utils.CardDBUtil.countTotalCards());
+       
+       // Load recent transactions
+       java.util.List<com.bank.models.TransactionRecord> transactions = 
+           com.bank.utils.TransferDBUtil.getAllTransactions(10);
+       req.setAttribute("transactions", transactions);
+       
        req.getRequestDispatcher("Admin.jsp").forward(req, resp);
        return;
 	}
@@ -28,6 +34,12 @@ public class Admin extends HttpServlet {
        req.setAttribute("Ucount", AdminDao.countUsers());
        req.setAttribute("pendingCardApps", com.bank.utils.CardDBUtil.countPendingApplications());
        req.setAttribute("totalCards", com.bank.utils.CardDBUtil.countTotalCards());
+       
+       // Load recent transactions
+       java.util.List<com.bank.models.TransactionRecord> transactions = 
+           com.bank.utils.TransferDBUtil.getAllTransactions(10);
+       req.setAttribute("transactions", transactions);
+       
        req.getRequestDispatcher("Admin.jsp").forward(req, resp);
        return;
                 

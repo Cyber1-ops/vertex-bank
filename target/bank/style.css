@@ -1,0 +1,351 @@
+body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
+    }
+
+    .navbar {
+      background-color: #0b1220;
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      color: #60a5fa !important;
+      font-size: 1.4rem;
+    }
+
+    .nav-link {
+      color: #e2e8f0 !important;
+      margin: 0 8px;
+    }
+
+    .nav-link:hover {
+      color: #60a5fa !important;
+    }
+
+    .sidebar {
+      background-color: #0b1220;
+      min-height: calc(100vh - 76px);
+      padding: 20px 0;
+    }
+
+    .sidebar .nav-link {
+      color: #cbd5e1;
+      padding: 12px 20px;
+      margin: 4px 10px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      background-color: #1e3a8a;
+      color: #60a5fa;
+    }
+
+    .sidebar .nav-link i {
+      margin-right: 10px;
+      width: 20px;
+    }
+
+    .card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-header {
+      background-color: transparent;
+      border-bottom: 1px solid #e2e8f0;
+      font-weight: 600;
+      padding: 1rem 1.5rem;
+    }
+
+    .balance-card {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      color: white;
+      padding: 30px;
+    }
+
+    .balance-card h3 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 10px 0;
+    }
+
+    .quick-action-btn {
+      background-color: white;
+      color: #1e3a8a;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .quick-action-btn:hover {
+      background-color: #f1f5f9;
+      transform: translateY(-2px);
+    }
+
+    .stat-card {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .stat-card i {
+      font-size: 2.5rem;
+      color: #2563eb;
+      margin-bottom: 10px;
+    }
+
+    .stat-card h4 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 10px 0 5px 0;
+      color: #1e293b;
+    }
+
+    .stat-card p {
+      color: #64748b;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    .transaction-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      border-bottom: 1px solid #f1f5f9;
+      transition: background-color 0.2s ease;
+    }
+
+    .transaction-item:hover {
+      background-color: #f8fafc;
+    }
+
+    .transaction-item:last-child {
+      border-bottom: none;
+    }
+
+    .transaction-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      font-size: 1.2rem;
+    }
+
+    .transaction-icon.credit {
+      background-color: #dcfce7;
+      color: #16a34a;
+    }
+
+    .transaction-icon.debit {
+      background-color: #fee2e2;
+      color: #dc2626;
+    }
+
+    .transaction-details {
+      flex-grow: 1;
+    }
+
+    .transaction-details h6 {
+      margin: 0 0 4px 0;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .transaction-details small {
+      color: #64748b;
+    }
+
+    .transaction-amount {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .transaction-amount.credit {
+      color: #16a34a;
+    }
+
+    .transaction-amount.debit {
+      color: #dc2626;
+    }
+
+    .btn-primary {
+      background-color: #2563eb;
+      border: none;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #1d4ed8;
+    }
+
+    .page-header {
+      padding: 30px 0 20px 0;
+    }
+
+    .page-header h2 {
+      font-weight: 700;
+      color: #0b1220;
+    }
+
+    .badge-status {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-completed {
+      background-color: #dcfce7;
+      color: #16a34a;
+    }
+
+    .badge-pending {
+      background-color: #fef3c7;
+      color: #d97706;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        min-height: auto;
+      }
+    }
+
+    /* Signup page specific styles */
+
+    .signup-container {
+      background: linear-gradient(to right, #0b1220, #1e3a8a);
+      color: #e2e8f0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .signup-container .card {
+        background-color: #fff;
+        color: #1e293b;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .signup-container h2 {
+      font-weight: 700;
+      margin-bottom: 25px;
+      color: #1e3a8a;
+      text-align: center;
+    }
+
+    .form-control {
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 12px 16px;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 0.25rem rgba(37, 99, 235, 0.25);
+    }
+
+    .input-group {
+      position: relative;
+    }
+
+    .validation-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .valid .validation-icon {
+      opacity: 1;
+      color: var(--success-green);
+    }
+
+    .invalid .validation-icon {
+      opacity: 1;
+      color: var(--error-red);
+    }
+
+    .valid .form-control {
+      border-color: var(--success-green);
+    }
+
+    .invalid .form-control {
+      border-color: var(--error-red);
+    }
+
+    .validation-message {
+      font-size: 0.85rem;
+      margin-top: 5px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .valid .validation-message {
+      display: block;
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success-green);
+    }
+
+    .invalid .validation-message {
+      display: block;
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--error-red);
+    }
+
+    .progress-container {
+      margin-bottom: 30px;
+    }
+
+    .progress-bar {
+      background: linear-gradient(45deg, var(--primary-blue), #3b82f6);
+      border-radius: 10px;
+      transition: width 0.5s ease;
+    }
+
+    .password-strength {
+      margin-top: 5px;
+      font-size: 0.85rem;
+    }
+
+    .strength-weak { color: var(--error-red); }
+    .strength-medium { color: var(--warning-orange); }
+    .strength-strong { color: var(--success-green); }
+
+    .floating-label {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    
+    .floating-label label {
+        position: static; /* Change from absolute to static */
+        margin-bottom: 5px; /* Add some margin below the label */
+        display: block; /* Ensure label takes its own line */
+        font-size: 0.9rem; /* Adjust font size */
+        color: #64748b;
+        background: none; /* Remove background */
+        padding: 0; /* Remove padding */
+    }

@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+    pageEncoding="UTF-8" import="com.bank.models.User"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +11,7 @@
   <link 
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
     rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
 
   <style>
     * {
@@ -29,14 +30,16 @@
     .navbar {
       background-color: #0b1220;
       box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
-      padding: 15px 0;
+      padding: 16px 0 !important;
     }
 
     .navbar-brand {
       font-weight: 700;
       color: #60a5fa !important;
-      font-size: 1.5rem;
+      font-size: 1.5rem !important;
       letter-spacing: 0.5px;
+      padding: 0 !important;
+      margin: 0 !important;
     }
 
     .nav-link {
@@ -453,10 +456,14 @@
 </head>
 
 <body>
+
+<%
+  User sessionUser = (User) session.getAttribute("user");
+%>
   <!-- ===== NAVIGATION BAR ===== -->
   <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
     <div class="container">
-      <a class="navbar-brand" href="index.jsp">Vertex Bank</a>
+      <a class="navbar-brand" href="index.jsp"><img src="logo/logo_vertex.png" alt="Vertex Bank Logo" class="logo-img"></a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -468,8 +475,20 @@
           <li class="nav-item"><a class="nav-link" href="#products">Products</a></li>
           <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
           <li class="nav-item"><a class="nav-link" href="Support.jsp">Support</a></li>
-          <li class="nav-item"><a class="btn btn-nav-login" href="login.jsp">Login</a></li>
-          <li class="nav-item"><a class="btn btn-nav-signup" href="signup.jsp">Sign Up</a></li>
+          <% if (sessionUser != null) { %>
+            <li class="nav-item text-white fw-semibold ms-2">
+              Logged in as <%= sessionUser.getFullName() != null ? sessionUser.getFullName() : sessionUser.getUsername() %>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="profile">Profile</a></li>
+            <li class="nav-item"><a class="nav-link" href="settings">Settings</a></li>
+            <li class="nav-item"><a class="nav-link" href="accounts">Accounts</a></li>
+            <li class="nav-item"><a class="nav-link" href="statement">Statement</a></li>
+            <li class="nav-item"><a class="btn btn-nav-login" href="Dashboard">Dashboard</a></li>
+            <li class="nav-item"><a class="btn btn-nav-signup" href="logout">Logout</a></li>
+          <% } else { %>
+            <li class="nav-item"><a class="btn btn-nav-login" href="login.jsp">Login</a></li>
+            <li class="nav-item"><a class="btn btn-nav-signup" href="signup.jsp">Sign Up</a></li>
+          <% } %>
         </ul>
       </div>
     </div>
@@ -760,13 +779,13 @@
       <div class="row">
         <!-- Brand Section -->
         <div class="col-md-4 mb-4">
-          <div class="footer-brand">Vertex Bank</div>
+          <div class="footer-brand"><img src="logo/logo_vertex.png" alt="Vertex Bank Logo" class="logo-img"></div>
           <p class="mb-3">Smart. Secure. Seamless.<br>Your trusted digital banking partner for a better financial future.</p>
           <div class="social-links">
-            <a href="#" class="social-icon" aria-label="Facebook">f</a>
-            <a href="#" class="social-icon" aria-label="Twitter">𝕏</a>
-            <a href="#" class="social-icon" aria-label="LinkedIn">in</a>
-            <a href="#" class="social-icon" aria-label="Instagram">📷</a>
+            <a href="https://facebook.com/vertexbank" target="_blank" rel="noopener" class="social-icon" aria-label="Facebook">f</a>
+            <a href="https://twitter.com/vertexbank" target="_blank" rel="noopener" class="social-icon" aria-label="Twitter">𝕏</a>
+            <a href="https://www.linkedin.com/company/vertexbank" target="_blank" rel="noopener" class="social-icon" aria-label="LinkedIn">in</a>
+            <a href="https://instagram.com/vertexbank" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram">📷</a>
           </div>
         </div>
 
@@ -820,9 +839,9 @@
           <small>
         <p class="text-muted mb-0">
           <small>
-            <a href="#" class="text-muted me-3" style="text-decoration: none;">Privacy Policy</a>
-            <a href="#" class="text-muted me-3" style="text-decoration: none;">Terms of Service</a>
-            <a href="#" class="text-muted" style="text-decoration: none;">Cookie Policy</a>
+            <a href="Support.jsp#privacy" class="text-muted me-3" style="text-decoration: none;">Privacy Policy</a>
+            <a href="Support.jsp#terms" class="text-muted me-3" style="text-decoration: none;">Terms of Service</a>
+            <a href="Support.jsp#cookies" class="text-muted" style="text-decoration: none;">Cookie Policy</a>
           </small>
         </p>
       </div>

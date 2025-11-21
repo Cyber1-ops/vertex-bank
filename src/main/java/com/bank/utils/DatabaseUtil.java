@@ -5,8 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Random;
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.bank.models.Account;
 import com.bank.models.User;
@@ -170,6 +170,61 @@ public class DatabaseUtil {
         }
     }
 
+    public static User getUserById(int userId) {
+        User user = null;
+        String sql = "SELECT * FROM `user` WHERE user_id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    user = new User(rs);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return user;
+    }
+
+    public static boolean updateUserContactInfo(int userId, String fullName, String email, String phone, String address) {
+        String sql = "UPDATE `user` SET full_name = ?, email = ?, phone = ?, address = ? WHERE user_id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, fullName);
+            ps.setString(2, email);
+            ps.setString(3, phone);
+            ps.setString(4, address);
+            ps.setInt(5, userId);
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean updateUserPassword(int userId, String passwordHash) {
+        String sql = "UPDATE `user` SET password_hash = ? WHERE user_id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, passwordHash);
+            ps.setInt(2, userId);
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public static boolean openAccount(Account account, User user) {
         // Ensure account number is generated
         if (account.getAccountNumber() == null || account.getAccountNumber().isEmpty()) {
@@ -278,6 +333,21 @@ public class DatabaseUtil {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    public static boolean updateAccountSettings(int accountId, String accountType, String currency) {
+        String sql = "UPDATE account SET account_type = ?, currency = ? WHERE account_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, accountType);
+            ps.setString(2, currency);
+            ps.setLong(3, accountId);
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

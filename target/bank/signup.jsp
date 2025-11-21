@@ -7,96 +7,335 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vertex Bank | Sign Up</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <style>
-    body {
-      background: linear-gradient(to right, #0b1220, #1e3a8a);
-      color: #e2e8f0;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .signup-container {
-      background-color: #fff;
-      color: #1e293b;
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      width: 100%;
-      max-width: 480px;
-    }
-
-    .signup-container h2 {
-      font-weight: 700;
-      margin-bottom: 25px;
-      color: #1e3a8a;
-    }
-
-    .btn-primary {
-      background-color: #2563eb;
-      border: none;
-    }
-
-    .btn-primary:hover {
-      background-color: #1d4ed8;
-    }
-
-    a {
-      text-decoration: none;
-      color: #2563eb;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-  <div class="signup-container">
-    <h2 class="text-center">Create Account</h2>
-    <p class="text-center text-muted mb-4">Join Vertex Bank in just a few steps</p>
 
-    <form action="signup" method="post">
-      <div class="mb-3">
-        <label for="fullname" class="form-label">Full Name</label>
-        <input type="text" class="form-control" id="fullname" placeholder="John Doe" name="name" required>
-      </div>
-      
-        <div class="mb-3">
-        <label for="fullname" class="form-label">Username</label>
-        <input type="text" class="form-control" id="fullname" placeholder="John Doe" name="username" required>
-      </div>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark py-2">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="Dashboard"><img src="logo/logo_vertex.png" alt="Vertex Bank Logo" class="logo-img"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="Support.jsp"><i class="bi bi-headset"></i> Support</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
-      <div class="mb-3">
-        <label for="email" class="form-label">Email address</label>
-        <input type="email" name="email" class="form-control" id="email" placeholder="you@example.com" required>
-      </div>
+<!-- ================= SIGN UP FORM ================= -->
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card p-4">
+                <!-- Success / Error Messages -->
+                <%
+                    String msg = (String) request.getAttribute("msg");
+                    String err = (String) request.getAttribute("error");
+                    if (msg != null) {
+                %>
+                <div class="alert alert-success text-center">
+                    <i class="fas fa-check-circle me-2"></i><%= msg %><br>
+                    <a href="login.jsp" class="btn btn-sm btn-light mt-2">
+                        <i class="fas fa-sign-in-alt me-1"></i>Login Now
+                    </a>
+                </div>
+                <% } else if (err != null) { %>
+                <div class="alert alert-danger text-center">
+                    <i class="fas fa-exclamation-circle me-2"></i><%= err %>
+                </div>
+                <% } %>
 
-      <div class="mb-3">
-        <label for="phone" class="form-label">Phone Number</label>
-        <input type="tel" name ="tel" class="form-control" id="phone" placeholder="+971 50 123 4567" required>
-      </div>
+                <h2 class="text-center">Create Account</h2>
+                <p class="text-center mb-4 text-muted">Join Vertex Bank in just a few steps</p>
 
-      <div class="mb-3">
-        <label for="password" class="form-label">Create Password</label>
-        <input type="password" name="pass" class="form-control" id="password" placeholder="********" required>
-      </div>
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="d-flex justify-content-between mb-2">
+                        <small>Password Strength</small>
+                        <small id="strength-text">Weak</small>
+                    </div>
+                    <div class="progress" style="height: 8px; background: rgba(0,0,0,0.1);">
+                        <div id="password-strength-bar" class="progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
 
-      <div class="mb-4">
-        <label for="confirm" class="form-label">Confirm Password</label>
-        <input type="password" class="form-control" id="confirm" placeholder="********" required>
-      </div>
+                <form action="signup" method="post" onsubmit="return validateForm();">
 
-      <button type="submit" class="btn btn-primary w-100 py-2">Create Account</button>
-    </form>
+                    <!-- Full Name -->
+                    <div class="floating-label">
+                        <label for="fullname">Full Name</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="name" id="fullname" placeholder="John Doe" required>
+                            <span class="validation-icon">
+            <i class="fas fa-check valid-icon"></i>
+            <i class="fas fa-times invalid-icon"></i>
+          </span>
+                        </div>
+                        <div class="validation-message" id="fullname-message"></div>
+                    </div>
 
-    <p class="text-center mt-4 mb-0">Already have an account? <a href="login.html">Login</a></p>
-    <p class="text-center"><a href="home.html">← Back to Home</a></p>
-  </div>
+                    <!-- Username -->
+                    <div class="floating-label">
+                        <label for="username">Username</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="username" id="username" placeholder="johndoe" required>
+                            <span class="validation-icon">
+            <i class="fas fa-check valid-icon"></i>
+            <i class="fas fa-times invalid-icon"></i>
+          </span>
+                        </div>
+                        <div class="validation-message" id="username-message"></div>
+                    </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+                    <!-- Email -->
+                    <div class="floating-label">
+                        <label for="email">Email Address</label>
+                        <div class="input-group">
+                            <input type="email" class="form-control" name="email" id="email" placeholder="you@example.com" required>
+                            <span class="validation-icon">
+            <i class="fas fa-check valid-icon"></i>
+            <i class="fas fa-times invalid-icon"></i>
+          </span>
+                        </div>
+                        <div class="validation-message" id="email-message"></div>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="floating-label">
+                        <label for="phone">Phone Number</label>
+                        <div class="input-group">
+                            <input type="tel" class="form-control" name="tel" id="phone" placeholder="05XXXXXXXX" required>
+                            <span class="validation-icon">
+            <i class="fas fa-check valid-icon"></i>
+            <i class="fas fa-times invalid-icon"></i>
+          </span>
+                        </div>
+                        <div class="validation-message" id="phone-message"></div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="floating-label">
+                        <label for="password">Create Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" name="pass" id="password" placeholder="********" required>
+                            <span class="validation-icon">
+            <i class="fas fa-check valid-icon"></i>
+            <i class="fas fa-times invalid-icon"></i>
+          </span>
+                        </div>
+                        <div class="validation-message" id="password-message"></div>
+                        <div class="password-strength" id="password-strength-text"></div>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="floating-label">
+                        <label for="confirm">Confirm Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="confirm" placeholder="********" required>
+                            <span class="validation-icon">
+            <i class="fas fa-check valid-icon"></i>
+            <i class="fas fa-times invalid-icon"></i>
+          </span>
+                        </div>
+                        <div class="validation-message" id="confirm-message"></div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mt-3">
+                        <i class="fas fa-user-plus me-2"></i>Create Account
+                    </button>
+                </form>
+
+                <p class="text-center mt-4 mb-0">Already have an account? <a href="login.jsp">Login Here</a></p>
+                <a href="index.jsp" class="d-block mt-3 text-center">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ================= ENHANCED JAVASCRIPT VALIDATION ================= -->
+<script>
+    // Validation patterns
+    const patterns = {
+        fullName: /^[A-Za-z ]{2,50}$/,
+        username: /^[A-Za-z0-9_]{3,20}$/,
+        email: /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
+        phone: /^05[0-9]{8}$/,
+        password: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/
+    };
+
+    // Messages
+    const messages = {
+        fullName: {
+            valid: "Full name looks good!",
+            invalid: "Full name must be 2-50 letters only."
+        },
+        username: {
+            valid: "Username is available!",
+            invalid: "Username must be 3-20 characters, letters/numbers/underscore only."
+        },
+        email: {
+            valid: "Valid email address!",
+            invalid: "Please enter a valid email address."
+        },
+        phone: {
+            valid: "Valid phone number!",
+            invalid: "Phone number must follow UAE format: 05XXXXXXXX"
+        },
+        password: {
+            valid: "Strong password!",
+            invalid: "Password must be at least 8 characters and contain letters and numbers."
+        },
+        confirm: {
+            valid: "Passwords match!",
+            invalid: "Passwords do not match!"
+        }
+    };
+
+    // Live validation function
+    function validateField(fieldId, pattern, messageKey) {
+        const field = document.getElementById(fieldId);
+        const message = document.getElementById(fieldId + '-message');
+        const parent = field.parentElement.parentElement;
+        const value = field.value.trim();
+
+        if (value === '') {
+            parent.classList.remove('valid', 'invalid');
+            message.style.display = 'none';
+            return false;
+        }
+
+        if (pattern.test(value)) {
+            parent.classList.add('valid');
+            parent.classList.remove('invalid');
+            message.textContent = messages[messageKey].valid;
+            return true;
+        } else {
+            parent.classList.add('invalid');
+            parent.classList.remove('valid');
+            message.textContent = messages[messageKey].invalid;
+            return false;
+        }
+    }
+
+    // Password strength checker
+    function checkPasswordStrength(password) {
+        const strengthBar = document.getElementById('password-strength-bar');
+        const strengthText = document.getElementById('strength-text');
+        const strengthDetail = document.getElementById('password-strength-text');
+
+        let strength = 0;
+        let feedback = [];
+
+        if (password.length >= 8) strength += 25;
+        if (/[A-Z]/.test(password)) strength += 25;
+        if (/[0-9]/.test(password)) strength += 25;
+        if (/[^A-Za-z0-9]/.test(password)) strength += 25;
+
+        strengthBar.style.width = strength + '%';
+
+        if (strength < 50) {
+            strengthBar.style.background = 'linear-gradient(45deg, #ef4444, #f87171)';
+            strengthText.textContent = 'Weak';
+            strengthText.className = 'strength-weak';
+            strengthDetail.textContent = 'Add uppercase letters, numbers, and special characters';
+        } else if (strength < 75) {
+            strengthBar.style.background = 'linear-gradient(45deg, #f59e0b, #fbbf24)';
+            strengthText.textContent = 'Medium';
+            strengthText.className = 'strength-medium';
+            strengthDetail.textContent = 'Good, but could be stronger with special characters';
+        } else {
+            strengthBar.style.background = 'linear-gradient(45deg, #10b981, #34d399)';
+            strengthText.textContent = 'Strong';
+            strengthText.className = 'strength-strong';
+            strengthDetail.textContent = 'Excellent! Your password is strong and secure';
+        }
+    }
+
+    // Confirm password validation
+    function validateConfirmPassword() {
+        const password = document.getElementById('password').value.trim();
+        const confirm = document.getElementById('confirm').value.trim();
+        const parent = document.getElementById('confirm').parentElement.parentElement;
+        const message = document.getElementById('confirm-message');
+
+        if (confirm === '') {
+            parent.classList.remove('valid', 'invalid');
+            message.style.display = 'none';
+            return false;
+        }
+
+        if (password === confirm && password !== '') {
+            parent.classList.add('valid');
+            parent.classList.remove('invalid');
+            message.textContent = messages.confirm.valid;
+            return true;
+        } else {
+            parent.classList.add('invalid');
+            parent.classList.remove('valid');
+            message.textContent = messages.confirm.invalid;
+            return false;
+        }
+    }
+
+    // Event listeners for live validation
+    document.addEventListener('DOMContentLoaded', function() {
+        // Full Name
+        document.getElementById('fullname').addEventListener('input', function() {
+            validateField('fullname', patterns.fullName, 'fullName');
+        });
+
+        // Username
+        document.getElementById('username').addEventListener('input', function() {
+            validateField('username', patterns.username, 'username');
+        });
+
+        // Email
+        document.getElementById('email').addEventListener('input', function() {
+            validateField('email', patterns.email, 'email');
+        });
+
+        // Phone
+        document.getElementById('phone').addEventListener('input', function() {
+            validateField('phone', patterns.phone, 'phone');
+        });
+
+        // Password
+        document.getElementById('password').addEventListener('input', function() {
+            validateField('password', patterns.password, 'password');
+            checkPasswordStrength(this.value);
+            validateConfirmPassword();
+        });
+
+        // Confirm Password
+        document.getElementById('confirm').addEventListener('input', function() {
+            validateConfirmPassword();
+        });
+    });
+
+    // Final form validation
+    function validateForm() {
+        const fields = [
+            validateField('fullname', patterns.fullName, 'fullName'),
+            validateField('username', patterns.username, 'username'),
+            validateField('email', patterns.email, 'email'),
+            validateField('phone', patterns.phone, 'phone'),
+            validateField('password', patterns.password, 'password'),
+            validateConfirmPassword()
+        ];
+
+        return fields.every(field => field === true);
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
