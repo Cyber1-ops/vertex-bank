@@ -24,7 +24,6 @@ public class StatementServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // show empty form / defaults
         request.getRequestDispatcher("/statement.jsp").forward(request, response);
     }
 
@@ -37,10 +36,10 @@ public class StatementServlet extends HttpServlet {
             return;
         }
 
-        String period = request.getParameter("period"); // "monthly" or "yearly"
+        String period = request.getParameter("period"); 
         String monthStr = request.getParameter("month");
         String yearStr = request.getParameter("year");
-        String download = request.getParameter("download"); // "csv" to download
+        String download = request.getParameter("download");
 
         int year = -1;
         int month = -1;
@@ -48,18 +47,18 @@ public class StatementServlet extends HttpServlet {
             if (yearStr != null && !yearStr.isEmpty()) year = Integer.parseInt(yearStr);
             if (monthStr != null && !monthStr.isEmpty()) month = Integer.parseInt(monthStr);
         } catch (NumberFormatException e) {
-            // ignore invalid
+           
         }
 
         List<TransactionRecord> txns = new ArrayList<>();
-        // fetch a reasonably large set and filter. If TransferDBUtil has a specific method, replace this.
+        
         try {
             txns = TransferDBUtil.getUserTransactions(user.getUserId(), 10000);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        // get user's account ids
+       
         List<Account> accounts = DatabaseUtil.getActiveUserAccounts(user.getUserId());
         final List<Long> accountIds = accounts.stream().map(Account::getAccountId).collect(Collectors.toList());
         final String periodF = period;
@@ -85,7 +84,7 @@ public class StatementServlet extends HttpServlet {
             return true;
         }).collect(Collectors.toList());
 
-        // compute totals
+       
         double totalIn = 0.0, totalOut = 0.0;
         for (TransactionRecord t : filtered) {
             if (accountIds.contains(t.getToAccountId()) && !accountIds.contains(t.getFromAccountId())) {
@@ -93,7 +92,7 @@ public class StatementServlet extends HttpServlet {
             } else if (accountIds.contains(t.getFromAccountId()) && !accountIds.contains(t.getToAccountId())) {
                 totalOut += t.getAmount();
             } else {
-                // transfer between user's accounts - treat as neutral
+               
             }
         }
 

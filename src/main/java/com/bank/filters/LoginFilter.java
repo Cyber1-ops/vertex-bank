@@ -28,25 +28,21 @@ public class LoginFilter extends HttpFilter {
         String uri = req.getRequestURI();
         String ctx = req.getContextPath();
 
-        // PUBLIC JSPs that do not require login
         boolean isPublic = uri.endsWith("index.jsp") || 
                            uri.endsWith("login.jsp") ||
                            uri.endsWith("signup.jsp") || 
                            uri.endsWith("Support.jsp");
 
         if (isPublic) {
-            // Let public JSPs pass
             chain.doFilter(request, response);
             return;
         }
 
-        // PRIVATE JSPs: user must be logged in
         if (user == null) {
             res.sendRedirect(ctx + "/index.jsp"); // redirect to login
             return;
         }
 
-        // User logged in, allow access
         chain.doFilter(request, response);
     }
 }

@@ -118,7 +118,6 @@ public class CardServlet extends HttpServlet {
 
                 long cardId = Long.parseLong(cardIdStr);
                 
-                // Verify card belongs to user
                 ArrayList<Card> userCards = CardDBUtil.getUserCards(user.getUserId());
                 boolean cardBelongsToUser = false;
                 for (Card card : userCards) {
@@ -144,7 +143,6 @@ public class CardServlet extends HttpServlet {
                 }
 
             } else if ("activate".equals(action)) {
-                // Handle card activation
                 String cardIdStr = request.getParameter("card_id");
                 
                 if (cardIdStr == null || cardIdStr.isEmpty()) {
@@ -155,7 +153,6 @@ public class CardServlet extends HttpServlet {
 
                 long cardId = Long.parseLong(cardIdStr);
                 
-                // Verify card belongs to user
                 ArrayList<Card> userCards = CardDBUtil.getUserCards(user.getUserId());
                 boolean cardBelongsToUser = false;
                 for (Card card : userCards) {
@@ -188,7 +185,6 @@ public class CardServlet extends HttpServlet {
             e.printStackTrace();
         }
 
-        // Redirect to GET (PRG)
         response.sendRedirect(request.getContextPath() + "/CardServlet");
     }
 }

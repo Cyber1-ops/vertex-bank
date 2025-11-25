@@ -21,7 +21,6 @@ public class AuditLogServlet extends HttpServlet {
 
 	     ArrayList<AuditLog> list =  AdminDao.getlog();
 	     
-	     // Handle search functionality
 	     String searchQuery = request.getParameter("search");
 	     List<AuditLog> filteredList = list;
 	     
@@ -39,7 +38,6 @@ public class AuditLogServlet extends HttpServlet {
 	         request.setAttribute("searchQuery", searchQuery);
 	     }
 	     
-	     // Handle pagination
 	     int page = 1;
 	     int pageSize = 20;
 	     try {
@@ -63,7 +61,6 @@ public class AuditLogServlet extends HttpServlet {
 	     request.setAttribute("totalPages", totalPages);
 	     request.setAttribute("totalItems", totalItems);
 	     
-	     // Forward the request to the JSP page
 	     request.getRequestDispatcher("AUDIT_LOG.jsp").forward(request, response);
 		 return;
 	

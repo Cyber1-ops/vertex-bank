@@ -28,9 +28,7 @@ public class AdminSecurityServlet extends HttpServlet {
             return;
         }
 
-        // Get recent security events from audit logs
         ArrayList<com.bank.models.AuditLog> securityLogs = AdminDao.getlog();
-        // Filter for security-related events
         ArrayList<com.bank.models.AuditLog> filteredLogs = new ArrayList<>();
         for (com.bank.models.AuditLog log : securityLogs) {
             if (log.getAction() != null && (

@@ -35,7 +35,7 @@ public class OpenAccountServlet extends HttpServlet {
         try {
             int userId = user.getUserId();
 
-            // Retrieve Form Parameters
+          
             String fullName = req.getParameter("full_name");
             String phone = req.getParameter("phone");
             String dobStr = req.getParameter("dob");
@@ -49,7 +49,7 @@ public class OpenAccountServlet extends HttpServlet {
             String currency = req.getParameter("currency");
             String initialDepositStr = req.getParameter("initial_deposit");
 
-            // Validation: Check for missing fields
+         
             if (fullName == null || fullName.trim().isEmpty() ||
                 phone == null || phone.trim().isEmpty() ||
                 dobStr == null || dobStr.trim().isEmpty() ||
@@ -68,7 +68,7 @@ public class OpenAccountServlet extends HttpServlet {
                 return;
             }
 
-            // Parse numeric values
+          
             int age;
             double monthlyIncome;
             double initialDeposit;
@@ -80,7 +80,7 @@ public class OpenAccountServlet extends HttpServlet {
                 initialDeposit = Double.parseDouble(initialDepositStr.trim());
                 dob = LocalDate.parse(dobStr.trim());
 
-                // Additional validation
+              
                 if (age < 18) {
                     req.setAttribute("error", "You must be at least 18 years old to open an account.");
                     req.getRequestDispatcher("OpenAccount.jsp").forward(req, resp);
@@ -103,7 +103,7 @@ public class OpenAccountServlet extends HttpServlet {
                 return;
             }
 
-            // Normalize Account Type
+         
             String normalizedAccountType = accountType.trim().toUpperCase();
             if (normalizedAccountType.contains("FIXED")) {
                 normalizedAccountType = "FIXED_DEPOSIT";
@@ -118,7 +118,6 @@ public class OpenAccountServlet extends HttpServlet {
                 return;
             }
 
-            // Update User object
             user.setFullName(fullName.trim());
             user.setPhone(phone.trim());
             user.setDob(dob);
@@ -129,7 +128,7 @@ public class OpenAccountServlet extends HttpServlet {
             user.setAddress(address.trim());
             user.setMonthlyIncome(monthlyIncome);
 
-            // Create Account object
+           
             Account account = new Account();
             account.setUserId(userId);
             account.setAccountType(normalizedAccountType);
@@ -137,11 +136,11 @@ public class OpenAccountServlet extends HttpServlet {
             account.setBalance(initialDeposit);
             account.setStatus("ACTIVE");
 
-            // Save to database
+            
             boolean opened = DatabaseUtil.openAccount(account, user);
 
             if (opened) {
-                // Update session with new user data
+               
                 session.setAttribute("user", user);
                 resp.sendRedirect(req.getContextPath() + "/Dashboard"); 
             } else {

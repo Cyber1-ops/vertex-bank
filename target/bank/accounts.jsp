@@ -48,7 +48,7 @@
                         <input type="hidden" name="action" value="update" />
                         <input type="hidden" name="accountId" value="<%= a.getAccountId() %>" />
                         <select name="accountType" class="form-select form-select-sm d-inline" style="width:150px;display:inline-block">
-                            <option value="checking" <%= "checking".equalsIgnoreCase(a.getAccountType())?"selected":"" %>>Checking</option>
+                            <option value="Current" <%= "Current".equalsIgnoreCase(a.getAccountType())?"selected":"" %>>Current</option>
                             <option value="savings" <%= "savings".equalsIgnoreCase(a.getAccountType())?"selected":"" %>>Savings</option>
                         </select>
                 </td>

@@ -24,7 +24,7 @@ public class Dashboard extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        HttpSession session = req.getSession(false); // ✅ FIXED: Check session first
+        HttpSession session = req.getSession(false); 
         if (session == null) {
             resp.sendRedirect(req.getContextPath() + "/index.jsp");
             return;
@@ -43,7 +43,7 @@ public class Dashboard extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        HttpSession session = req.getSession(false); // ✅ FIXED: Check session first
+        HttpSession session = req.getSession(false); 
         if (session == null) {
             resp.sendRedirect(req.getContextPath() + "/index.jsp");
             return;
@@ -63,13 +63,13 @@ public class Dashboard extends HttpServlet {
 
         Account AC = DatabaseUtil.getAccount(user.getUserId());
 
-        // User has no account → go to create/welcome page
+       
         if (AC == null || AC.getAccountNumber() == null || AC.getAccountNumber().isEmpty()) {
         	resp.sendRedirect(req.getContextPath() + "/OpenAccount.jsp");
             return;
         }
 
-        // Set account details
+        
         req.setAttribute("ACnumber", AC.getAccountNumber());
         req.setAttribute("ACtype", AC.getAccountType());
         req.setAttribute("ACcurrency", AC.getCurrency());
@@ -77,15 +77,15 @@ public class Dashboard extends HttpServlet {
         req.setAttribute("ACbalance", AC.getBalance());
         req.setAttribute("userAccountId", AC.getAccountId());
 
-        // Load user cards
+       
         ArrayList<Card> cards = CardDBUtil.getUserCards(user.getUserId());
         req.setAttribute("cards", cards);
 
-        // Load recent transactions
+       
         List<TransactionRecord> transactions = TransferDBUtil.getUserTransactions(user.getUserId(), 5);
         req.setAttribute("transactions", transactions);
 
-        // Calculate monthly income and expenses
+        
         LocalDate now = LocalDate.now();
         int currentMonth = now.getMonthValue();
         int currentYear = now.getYear();

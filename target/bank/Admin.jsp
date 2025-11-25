@@ -432,22 +432,6 @@
             </div>
           </div>
 
-          <div class="col-lg-3 col-md-6">
-            <div class="card stat-card danger">
-              <div class="d-flex justify-content-between align-items-center">
-                <div>
-                  <p>Active Loans</p>
-                  <h3>1,247</h3>
-                  <small class="text-muted"><i class="bi bi-dash"></i> No change</small>
-                </div>
-                <div class="icon-wrapper">
-                  <i class="bi bi-bank"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <!-- Recent Transactions & Quick Stats -->
         <div class="row mb-4">
           <div class="col-lg-8">

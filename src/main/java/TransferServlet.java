@@ -31,30 +31,25 @@ public class TransferServlet extends HttpServlet {
             return;
         }
 
-        // Load user accounts and beneficiaries
         ArrayList<Account> accounts = DatabaseUtil.getActiveUserAccounts(user.getUserId());
         ArrayList<Beneficiary> beneficiaries =( ArrayList<Beneficiary>) TransferDBUtil.getAllBeneficiary(user.getUserId());
 
         request.setAttribute("accounts", accounts);
         request.setAttribute("beneficiaries", beneficiaries);
 
-        // Get messages from session (PRG pattern)
         String success = (String) session.getAttribute("success");
         String error = (String) session.getAttribute("error");
         
-        // Get transfer details from session for success modal
         String transferAmount = (String) session.getAttribute("transferAmount");
         String transferFrom = (String) session.getAttribute("transferFrom");
         String transferTo = (String) session.getAttribute("transferTo");
         
-        // Remove from session after reading
         session.removeAttribute("success");
         session.removeAttribute("error");
         session.removeAttribute("transferAmount");
         session.removeAttribute("transferFrom");
         session.removeAttribute("transferTo");
 
-        // Set as request attributes
         request.setAttribute("success", success);
         request.setAttribute("error", error);
         request.setAttribute("transferAmount", transferAmount);
@@ -191,24 +186,20 @@ public class TransferServlet extends HttpServlet {
                     return;
             }
 
-            // Set messages and log
             if (transferSuccess) {
                 System.out.println("TransferServlet: Transfer successful.");
                 session.setAttribute("success", "Transfer completed successfully!");
                 
-                // Store transfer details for success modal
                 String fromAccountText = "";
                 String toAccountText = "";
                 String currency = "AED";
                 
-                // Get from account details
                 Account fromAccount = com.bank.utils.CardDBUtil.getAccountById(fromAccountId);
                 if (fromAccount != null) {
                     fromAccountText = fromAccount.getAccountNumber() + " - " + fromAccount.getAccountType();
                     currency = fromAccount.getCurrency();
                 }
                 
-                // Get to account details based on transfer type
                 if ("OWN_ACCOUNT".equals(transferType)) {
                     String toAccountStr = request.getParameter("to_own_account_id");
                     if (toAccountStr != null && !toAccountStr.isEmpty()) {
@@ -256,7 +247,6 @@ public class TransferServlet extends HttpServlet {
             session.setAttribute("error", "An unexpected error occurred during transfer.");
         }
 
-        // Redirect to GET (PRG)
         System.out.println("TransferServlet: Redirecting to /TransferServlet (GET).");
         response.sendRedirect(request.getContextPath() + "/TransferServlet");
     }
